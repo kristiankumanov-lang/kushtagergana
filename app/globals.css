@@ -1,26 +1,102 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@theme {
+  /* Warm mountain palette — wood, cream, forest, terracotta */
+  --color-cream: #faf4e9;
+  --color-cream-dark: #f0e6d3;
+  --color-parchment: #fffdf9;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-wood-100: #e9dcc8;
+  --color-wood-300: #c9a374;
+  --color-wood-500: #8b5e3c;
+  --color-wood-700: #6b4a31;
+  --color-wood-900: #3d2a1c;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  /* Muted sage/olive — small accents only (icons, selected states), never a
+     dominant section background. */
+  --color-forest-100: #e6e9df;
+  --color-forest-300: #a8b89c;
+  --color-forest-500: #6b7d64;
+  --color-forest-700: #52604c;
+  --color-forest-900: #333d2e;
+
+  /* Earthy clay — muted accent, not a primary CTA color. */
+  --color-terracotta-100: #ecdccd;
+  --color-terracotta-300: #cf9a72;
+  --color-terracotta-500: #a8663f;
+  --color-terracotta-700: #7c4a2c;
+  --color-terracotta-900: #5c3620;
+
+  /* Fresh garden green — primary CTA color, distinct from the wood/brown
+     button family so main actions stand out at a glance. */
+  --color-accent-500: #4a7c59;
+  --color-accent-600: #3d6749;
+
+  --color-ink: #2b2420;
+  --color-ink-soft: #55483c;
+
+  --font-display: var(--font-playfair), "Georgia", serif;
+  --font-sans: var(--font-inter), "Segoe UI", sans-serif;
+  --font-hand: var(--font-caveat), cursive;
+
+  --animate-fade-in: fade-in 0.25s ease-out forwards;
+  --animate-kenburns: kenburns 22s ease-in-out infinite alternate;
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
+  @keyframes kenburns {
+    from {
+      transform: scale(1);
+    }
+    to {
+      transform: scale(1.08);
+    }
+  }
+}
+
+:root {
+  --background: var(--color-cream);
+  --foreground: var(--color-ink);
+}
+
+* {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    scroll-behavior: auto;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Warm scrollbar accent (progressive enhancement, WebKit only) */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-cream);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-wood-300);
+  border-radius: 999px;
+}
+
+/* Custom aspect ratio for calendar day cells */
+.day-cell {
+  aspect-ratio: 1 / 1;
 }

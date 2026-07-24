@@ -1,0 +1,66 @@
+"use client";
+
+import { ExternalLink, Navigation } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/context";
+import { Container } from "@/components/ui/Container";
+import { SectionHeading } from "@/components/ui/SectionHeading";
+
+// Exact pin for the house (ул. 11-та 2, 2043 Радуил), not just the village centroid.
+const LAT = 42.2813711;
+const LNG = 23.6887679;
+const MAPS_EMBED_SRC = `https://www.google.com/maps?q=${LAT},${LNG}&z=16&output=embed`;
+const MAPS_LINK = `https://www.google.com/maps/search/?api=1&query=${LAT},${LNG}`;
+
+export function LocationSection() {
+  const { t } = useLanguage();
+
+  return (
+    <section id="location" className="scroll-mt-20 bg-cream py-20 sm:py-28">
+      <Container>
+        <SectionHeading kicker={t.location.kicker} heading={t.location.heading} subheading={t.location.subheading} />
+
+        <div className="mt-10 grid gap-8 lg:grid-cols-5">
+          <div className="overflow-hidden rounded-2xl border border-wood-100 shadow-lg shadow-wood-900/5 lg:col-span-3">
+            <iframe
+              title="Карта – Къща за гости Гергана, Радуил"
+              src={MAPS_EMBED_SRC}
+              className="h-80 w-full sm:h-[420px]"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
+          </div>
+
+          <div className="flex flex-col gap-6 lg:col-span-2">
+            <div className="grid gap-3">
+              {t.location.distances.map((d) => (
+                <div
+                  key={d.label}
+                  className="flex items-center justify-between rounded-xl border border-wood-100 bg-parchment px-5 py-4"
+                >
+                  <span className="text-sm font-medium text-ink-soft sm:text-base">{d.label}</span>
+                  <span className="font-display text-lg text-terracotta-500">{d.value}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="rounded-xl bg-wood-100/50 p-5">
+              <h4 className="font-display text-xl text-ink">{t.location.directionsTitle}</h4>
+              <p className="mt-2 text-sm text-ink-soft sm:text-base">{t.location.directionsText}</p>
+            </div>
+
+            <a
+              href={MAPS_LINK}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-accent-500 px-6 py-3 text-sm font-semibold text-cream transition-colors hover:bg-accent-600"
+            >
+              <Navigation className="size-4" />
+              {t.location.mapCta}
+              <ExternalLink className="size-3.5" />
+            </a>
+          </div>
+        </div>
+      </Container>
+    </section>
+  );
+}
