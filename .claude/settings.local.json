@@ -57,7 +57,18 @@
       "Bash(node shot-clean.mjs)",
       "Bash(node shot-mobile-gallery.mjs)",
       "Bash(taskkill //PID 3304 //F)",
-      "Bash(git init *)"
+      "Bash(git init *)",
+      "Bash(git remote *)",
+      "Bash(git branch *)",
+      "Bash(git push *)",
+      "Bash(git stash *)",
+      "Bash(node shot-lightbox.mjs shot-before.png)",
+      "Bash(taskkill //PID 18416 //F)",
+      "Bash(node shot-lightbox.mjs shot-after.png)",
+      "Bash(node shot-verify.mjs)",
+      "Bash(node shot-pixel-check.mjs)",
+      "Bash(node shot-rgb-check.mjs)",
+      "Bash(taskkill //PID 728 //F)"
     ],
     "additionalDirectories": [
       "C:\\Users\\Kumanov\\Desktop\\kushtazagostigergana"

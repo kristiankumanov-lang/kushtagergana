@@ -74,7 +74,7 @@ export function Gallery() {
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-wood-900/95 p-4 animate-fade-in"
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-ink/95 p-4 animate-fade-in"
           onClick={() => setLightboxIndex(null)}
         >
           <button
@@ -97,14 +97,14 @@ export function Gallery() {
           </button>
 
           <div
-            className="relative aspect-4/3 w-full max-w-3xl"
+            className="relative h-[85vh] w-[92vw] max-w-4xl"
             onClick={(e) => e.stopPropagation()}
           >
             <Image
               src={images[lightboxIndex].src}
               alt={t.gallery.categories[images[lightboxIndex].category]}
               fill
-              sizes="90vw"
+              sizes="92vw"
               className="rounded-lg object-contain"
             />
           </div>
