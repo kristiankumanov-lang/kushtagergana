@@ -27,10 +27,8 @@ export const ratings = {
     score: 4.7,
     maxScore: 5,
     reviewCount: 65,
-    // Директен линк към отзивите чрез place_id. Ако не резолвира коректно,
-    // TODO: провери и при нужда замени с search линка:
-    // https://www.google.com/maps/search/?api=1&query=Къща+за+гости+Гергана+Радуил
-    url: "https://www.google.com/maps/place/?q=place_id:ChIJvZF0Ur45qxQRHcH5kYYlOMg",
+    // Директен линк към чист списък с отзивите (без карта/общ преглед).
+    url: "https://search.google.com/local/reviews?placeid=ChIJvZF0Ur45qxQRHcH5kYYlOMg&q=Kashta+za+gosti+Gergana&hl=bg",
   },
 } as const;
 

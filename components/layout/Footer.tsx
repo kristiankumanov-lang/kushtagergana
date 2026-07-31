@@ -21,14 +21,14 @@ export function Footer() {
           <span className="text-sm font-semibold uppercase tracking-wide text-cream/60">
             {t.footer.contactsTitle}
           </span>
-          <a href="tel:+359888000000" className="flex items-center gap-2 text-sm text-cream/85 hover:text-terracotta-300">
-            <Phone className="size-4" /> +359 88 800 0000
+          <a href="tel:+359888812931" className="flex items-center gap-2 text-sm text-cream/85 hover:text-terracotta-300">
+            <Phone className="size-4" /> +359 88 881 2931
           </a>
           <a
-            href="mailto:hello@kushta-gergana.bg"
+            href="mailto:gerganaguesthouse@gmail.com"
             className="flex items-center gap-2 text-sm text-cream/85 hover:text-terracotta-300"
           >
-            <Mail className="size-4" /> hello@kushta-gergana.bg
+            <Mail className="size-4" /> gerganaguesthouse@gmail.com
           </a>
           <span className="flex items-center gap-2 text-sm text-cream/85">
             <MapPin className="size-4 shrink-0" /> {t.footer.address}

@@ -68,7 +68,24 @@
       "Bash(node shot-verify.mjs)",
       "Bash(node shot-pixel-check.mjs)",
       "Bash(node shot-rgb-check.mjs)",
-      "Bash(taskkill //PID 728 //F)"
+      "Bash(taskkill //PID 728 //F)",
+      "Bash(node \"C:\\\\Users\\\\Kumanov\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-Kumanov-Desktop-kushtazagostigergana\\\\40b428e8-6d92-4986-a3e1-7b57da5d4262\\\\scratchpad\\\\shot.js\")",
+      "Bash(node .tmp-shot.js)",
+      "Bash(lsof -ti:3100 -sTCP:LISTEN)",
+      "Bash(xargs -r kill)",
+      "Bash(lsof -ti:3101 -sTCP:LISTEN)",
+      "Bash(node .tmp-verify-link.js)",
+      "Bash(node .tmp-verify-live.js)",
+      "Bash(node .tmp-verify-live2.js)",
+      "Bash(node .tmp-verify-live3.js)",
+      "Bash(node .tmp-verify-live4.js)",
+      "Bash(lsof -ti:3103 -sTCP:LISTEN)",
+      "Bash(node .tmp-verify-search.js)",
+      "Bash(node .tmp-verify-search-live.js)",
+      "Bash(lsof -ti:3104 -sTCP:LISTEN)",
+      "Bash(curl -s http://localhost:3106)",
+      "Bash(lsof -ti:3106 -sTCP:LISTEN)",
+      "Bash(node .tmp-shot-route2.js)"
     ],
     "additionalDirectories": [
       "C:\\Users\\Kumanov\\Desktop\\kushtazagostigergana"

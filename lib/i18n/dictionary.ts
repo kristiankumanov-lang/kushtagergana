@@ -108,6 +108,9 @@ export interface Dictionary {
     directionsTitle: string;
     directionsText: string;
     mapCta: string;
+    mapPlaceholderTitle: string;
+    mapPlaceholderText: string;
+    mapShowButton: string;
   };
   booking: {
     kicker: string;
@@ -315,8 +318,11 @@ const bg: Dictionary = {
     ],
     directionsTitle: "Как да ни намерите",
     directionsText:
-      "От София по автомагистрала „Тракия“ до Костенец, след което следвате пътните знаци за Боровец. Изпращаме точни насоки при потвърждение на резервацията.",
+      "По магистрала „Тракия“ до Костенец, след което следвате пътните знаци за Самоков и Боровец. Изпращаме точни насоки при потвърждение на резервацията.",
     mapCta: "Отвори в Google Maps",
+    mapPlaceholderTitle: "Картата се зарежда от Google Maps",
+    mapPlaceholderText: "Google задава бисквитки едва след като заредите картата.",
+    mapShowButton: "Покажи картата",
   },
   booking: {
     kicker: "Резервация",
@@ -523,8 +529,11 @@ const en: Dictionary = {
     ],
     directionsTitle: "How to arrive",
     directionsText:
-      "From Sofia, take the Trakia motorway to Samokov, then follow the signs to Raduil. We send exact directions once your booking is confirmed.",
+      "Via the \"Trakia\" (A1) motorway to Kostenets, then follow the signs to Samokov and Borovets. We send exact directions once your booking is confirmed.",
     mapCta: "Open in Google Maps",
+    mapPlaceholderTitle: "The map loads from Google Maps",
+    mapPlaceholderText: "Google only sets cookies once you load the map.",
+    mapShowButton: "Show the map",
   },
   booking: {
     kicker: "Booking",

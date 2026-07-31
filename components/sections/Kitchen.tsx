@@ -37,13 +37,22 @@ export function Kitchen() {
                 className="object-cover transition-transform duration-500 hover:scale-105"
               />
             </div>
-            <div className="grid grid-cols-2 items-start gap-4 sm:grid-cols-3">
+            <div className="grid grid-cols-2 items-start gap-4">
               <div className="relative aspect-3/4 overflow-hidden rounded-2xl shadow-xl shadow-wood-900/10">
                 <Image
                   src="/gallery/kitchen/kitchen-2.jpg"
                   alt="Камината в механата"
                   fill
-                  sizes="(min-width: 1024px) 20vw, 45vw"
+                  sizes="(min-width: 1024px) 30vw, 45vw"
+                  className="object-cover transition-transform duration-500 hover:scale-105"
+                />
+              </div>
+              <div className="relative aspect-3/4 overflow-hidden rounded-2xl shadow-xl shadow-wood-900/10">
+                <Image
+                  src="/gallery/kitchen/kitchen-10.jpg"
+                  alt="Закуска, поднесена до басейна"
+                  fill
+                  sizes="(min-width: 1024px) 30vw, 45vw"
                   className="object-cover transition-transform duration-500 hover:scale-105"
                 />
               </div>
@@ -52,7 +61,7 @@ export function Kitchen() {
                   src="/gallery/kitchen/kitchen-7.jpg"
                   alt="Сервирани маси в механата"
                   fill
-                  sizes="(min-width: 1024px) 20vw, 45vw"
+                  sizes="(min-width: 1024px) 30vw, 45vw"
                   className="object-cover transition-transform duration-500 hover:scale-105"
                 />
               </div>
@@ -61,7 +70,7 @@ export function Kitchen() {
                   src="/gallery/kitchen/kitchen-9.jpg"
                   alt="Домашна баница, приготвена в механата"
                   fill
-                  sizes="(min-width: 1024px) 20vw, 45vw"
+                  sizes="(min-width: 1024px) 30vw, 45vw"
                   className="object-cover transition-transform duration-500 hover:scale-105"
                 />
               </div>

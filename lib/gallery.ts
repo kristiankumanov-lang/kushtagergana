@@ -25,6 +25,8 @@ export const galleryImages: GalleryImage[] = [
   { src: "/gallery/kitchen/kitchen-7.jpg", category: "kitchen" },
   { src: "/gallery/kitchen/kitchen-8.jpg", category: "kitchen" },
   { src: "/gallery/kitchen/kitchen-9.jpg", category: "kitchen" },
+  { src: "/gallery/kitchen/kitchen-10.jpg", category: "kitchen" },
+  { src: "/gallery/kitchen/kitchen-11.jpg", category: "kitchen" },
   { src: "/gallery/yard/yard-1.jpg", category: "yard" },
   { src: "/gallery/yard/yard-2.jpg", category: "yard" },
   { src: "/gallery/mountain/mountain-1.jpg", category: "mountain" },
