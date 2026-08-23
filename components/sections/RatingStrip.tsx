@@ -106,6 +106,10 @@ export function RatingStrip() {
           </RatingCard>
         </div>
 
+        {/* text-ink-soft на bg-cream ≈ 8:1 контраст (проверено) - достатъчно
+            приглушено за бележка под линия, но остава четимо. */}
+        <p className="mt-4 text-xs text-ink-soft">{r.disclaimer}</p>
+
         <div className="mt-8 grid gap-6 sm:grid-cols-3">
           {r.testimonials.map((testimonial) => (
             <div key={testimonial.author} className="flex flex-col gap-2">

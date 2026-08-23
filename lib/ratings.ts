@@ -7,10 +7,10 @@
  */
 export const ratings = {
   booking: {
-    score: 9.7,
+    score: 9.3,
     maxScore: 10,
     label: { bg: "Изключително", en: "Exceptional" },
-    reviewCount: 17,
+    reviewCount: 21,
     // Ред на извеждане = ред на извеждане в интерфейса (най-силните първи).
     subcategories: {
       staff: 10.0,
@@ -20,8 +20,7 @@ export const ratings = {
       valueForMoney: 9.6,
       comfort: 9.5,
     },
-    // TODO: замени с реалния линк към обявата в Booking.com, когато го получим.
-    url: "",
+    url: "https://www.booking.com/hotel/bg/kshcha-za-gosti-gergana-raduil.html",
   },
   google: {
     score: 4.7,

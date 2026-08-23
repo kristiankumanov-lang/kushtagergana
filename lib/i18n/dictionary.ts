@@ -25,6 +25,7 @@ export interface Dictionary {
     googleReviewsSuffix: string;
     googleContext: string;
     viewAllReviews: string;
+    disclaimer: string;
     subcategoryLabels: {
       staff: string;
       cleanliness: string;
@@ -179,6 +180,8 @@ const bg: Dictionary = {
     googleReviewsSuffix: "отзива",
     googleContext: "Отзиви от гости в Google ",
     viewAllReviews: "Виж всички отзиви",
+    disclaimer:
+      "* Оценките се обновяват периодично и може да се различават от актуалните в Google и Booking.com.",
     subcategoryLabels: {
       staff: "Персонал",
       cleanliness: "Чистота",
@@ -392,6 +395,8 @@ const en: Dictionary = {
     googleReviewsSuffix: "reviews",
     googleContext: "Guest reviews on Google Maps",
     viewAllReviews: "See all reviews",
+    disclaimer:
+      "* Ratings are updated periodically and may differ from the current ones on Google and Booking.com.",
     subcategoryLabels: {
       staff: "Staff",
       cleanliness: "Cleanliness",
