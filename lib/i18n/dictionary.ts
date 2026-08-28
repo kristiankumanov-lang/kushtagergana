@@ -4,6 +4,7 @@ export const defaultLocale: Locale = "bg";
 
 export interface Dictionary {
   nav: {
+    logoAlt: string;
     about: string;
     kitchen: string;
     gallery: string;
@@ -158,6 +159,7 @@ export interface Dictionary {
 
 const bg: Dictionary = {
   nav: {
+    logoAlt: "Къща за гости Гергана - лого",
     about: "За къщата",
     kitchen: "Кухнята и механата",
     gallery: "Галерия",
@@ -373,6 +375,7 @@ const bg: Dictionary = {
 
 const en: Dictionary = {
   nav: {
+    logoAlt: "Guest House Gergana - logo",
     about: "The House",
     kitchen: "Kitchen & Tavern",
     gallery: "Gallery",

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { Menu, X } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/context";
 import { Container } from "@/components/ui/Container";
@@ -33,8 +34,19 @@ export function Header() {
       }`}
     >
       <Container className="flex h-18 items-center justify-between py-3">
-        <a href="#top" className="font-display text-xl sm:text-2xl text-wood-700">
-          Къща Гергана
+        <a href="#top" className="shrink-0">
+          {/* Хедърът е bg-transparent преди скрол (л. 32-33) - но Hero
+              секцията отдолу е bg-cream (Hero.tsx), не пълноекранна снимка,
+              затова логото винаги стои на крем фон, скролнато или не -
+              няма нужда от отделен тъмен вариант. h-9/h-12 = 36px/48px. */}
+          <Image
+            src="/logo.png"
+            alt={t.nav.logoAlt}
+            width={320}
+            height={160}
+            priority
+            className="h-9 w-auto sm:h-12"
+          />
         </a>
 
         <nav className="hidden lg:flex items-center gap-7">
