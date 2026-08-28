@@ -21,4 +21,6 @@ export interface BookingRequestPayload {
   children: number;
   message?: string;
   locale: "bg" | "en";
+  /** Honeypot — must stay empty; non-empty means a bot filled the form. */
+  company?: string;
 }
