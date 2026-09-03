@@ -8,7 +8,12 @@ import "./globals.css";
 const playfair = Playfair_Display({
   variable: "--font-playfair",
   subsets: ["latin", "cyrillic"],
-  style: ["normal", "italic"],
+  // italic was requested but is never actually used anywhere in the
+  // rendered site — the only `italic` CSS class in the codebase
+  // (RatingStrip.tsx testimonial quotes) applies to body/Inter text via
+  // faux-italic, not Playfair. Requesting it forced 2 extra preloaded
+  // font files (~60KB) to fight the hero image for bandwidth for no
+  // visual benefit. Drop to normal-only.
 });
 
 const inter = Inter({
