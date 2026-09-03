@@ -14,16 +14,33 @@ const playfair = Playfair_Display({
   // faux-italic, not Playfair. Requesting it forced 2 extra preloaded
   // font files (~60KB) to fight the hero image for bandwidth for no
   // visual benefit. Drop to normal-only.
+  //
+  // preload:false (perf #4, part B): renders the Hero h1, but so does
+  // Inter (subtitle) and Caveat (kicker) below — all three compete with
+  // the LCP image for bandwidth if preloaded. Measured LCP 2109ms -> 1991ms
+  // with this off, CLS unchanged at 0 (next/font's fallback is
+  // metric-matched, no reflow on swap). FOUT window is brief and doesn't
+  // affect layout — see the perf #4 report for screenshots.
+  preload: false,
 });
 
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin", "cyrillic"],
+  // preload:false (perf #4, part B): renders Hero subtitle/CTA + nav.
+  // Measured LCP 1991ms -> 1940ms with this off, CLS unchanged at 0.
+  preload: false,
 });
 
 const caveat = Caveat({
   variable: "--font-caveat",
   subsets: ["latin", "cyrillic"],
+  // perf #4 A1: Caveat is 148 KiB for one decorative Hero kicker line —
+  // both subsets were preloading at High priority, fighting the LCP image
+  // for bandwidth. display:swap is already on, so dropping preload just
+  // defers the fetch (via unicode-range CSS discovery) instead of forcing
+  // it eagerly; the kicker still paints immediately with its fallback.
+  preload: false,
 });
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://kushta-gergana.bg";
