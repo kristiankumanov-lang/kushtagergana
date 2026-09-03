@@ -29,7 +29,8 @@ export function About() {
             src="/gallery/yard/yard-2.jpg"
             alt="Дворът на къщата за гости"
             fill
-            sizes="(min-width: 1024px) 45vw, 100vw"
+            quality={68}
+            sizes="(min-width: 1024px) 45vw, (min-width: 640px) calc(100vw - 64px), calc(100vw - 48px)"
             className="object-cover"
           />
         </div>

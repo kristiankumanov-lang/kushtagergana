@@ -4,8 +4,7 @@ import { useState } from "react";
 import { CheckCircle2, Loader2, XCircle } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/context";
 import { staysOverlapBusyRanges } from "@/lib/dates";
-import { bookingSchema } from "@/lib/validation";
-import type { AvailabilityResponse } from "@/lib/types";
+import type { AvailabilityResponse, BookingRequestPayload } from "@/lib/types";
 import { Calendar } from "./Calendar";
 
 interface BookingWidgetProps {
@@ -62,17 +61,22 @@ export function BookingWidget({ initialAvailability }: BookingWidgetProps) {
 
     setSubmitState("submitting");
     try {
-      const payload = bookingSchema.parse({
-        name,
-        phone,
-        email,
+      // Built as a plain object rather than parsed through the (zod-based)
+      // bookingSchema here — validate() above already gates submission, and
+      // the API route re-validates with the same schema server-side anyway.
+      // Keeping zod out of this client component keeps it out of the
+      // client bundle entirely (it's a real dependency only in route.ts).
+      const payload: BookingRequestPayload = {
+        name: name.trim(),
+        phone: phone.trim(),
+        email: email.trim(),
         checkIn,
         checkOut,
         adults,
         children,
-        message,
+        message: message.trim(),
         locale,
-      });
+      };
 
       const res = await fetch("/api/booking", {
         method: "POST",

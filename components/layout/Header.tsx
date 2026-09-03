@@ -42,9 +42,15 @@ export function Header() {
           <Image
             src="/logo.png"
             alt={t.nav.logoAlt}
-            width={320}
-            height={160}
-            priority
+            // Intrinsic size Next uses to build the 1x/2x srcset — matched to
+            // the largest real display size (h-12 = 48px tall, 2:1 ratio),
+            // not the source file's own dimensions. The old 320x160 made
+            // Next fetch a candidate sized for a 320px-wide logo when it's
+            // only ever shown at ~96px — most of that download was wasted.
+            width={96}
+            height={48}
+            preload
+            quality={68}
             className="h-9 w-auto sm:h-12"
           />
         </a>

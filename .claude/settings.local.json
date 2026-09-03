@@ -85,7 +85,9 @@
       "Bash(lsof -ti:3104 -sTCP:LISTEN)",
       "Bash(curl -s http://localhost:3106)",
       "Bash(lsof -ti:3106 -sTCP:LISTEN)",
-      "Bash(node .tmp-shot-route2.js)"
+      "Bash(node .tmp-shot-route2.js)",
+      "Bash(npx tsc *)",
+      "Bash(node scripts/check.mjs)"
     ],
     "additionalDirectories": [
       "C:\\Users\\Kumanov\\Desktop\\kushtazagostigergana"

@@ -33,7 +33,8 @@ export function Kitchen() {
                 src="/gallery/kitchen/kitchen-4.jpg"
                 alt="Механата на къщата, подредена за гостите"
                 fill
-                sizes="(min-width: 1024px) 60vw, 90vw"
+                quality={68}
+                sizes="(min-width: 1024px) 60vw, (min-width: 640px) calc(100vw - 64px), calc(100vw - 48px)"
                 className="object-cover transition-transform duration-500 hover:scale-105"
               />
             </div>
@@ -43,7 +44,8 @@ export function Kitchen() {
                   src="/gallery/kitchen/kitchen-2.jpg"
                   alt="Камината в механата"
                   fill
-                  sizes="(min-width: 1024px) 30vw, 45vw"
+                  quality={68}
+                  sizes="(min-width: 1024px) 30vw, (min-width: 640px) calc((100vw - 80px) / 2), calc((100vw - 64px) / 2)"
                   className="object-cover transition-transform duration-500 hover:scale-105"
                 />
               </div>
@@ -52,7 +54,8 @@ export function Kitchen() {
                   src="/gallery/kitchen/kitchen-10.jpg"
                   alt="Закуска, поднесена до басейна"
                   fill
-                  sizes="(min-width: 1024px) 30vw, 45vw"
+                  quality={68}
+                  sizes="(min-width: 1024px) 30vw, (min-width: 640px) calc((100vw - 80px) / 2), calc((100vw - 64px) / 2)"
                   className="object-cover transition-transform duration-500 hover:scale-105"
                 />
               </div>
@@ -61,7 +64,8 @@ export function Kitchen() {
                   src="/gallery/kitchen/kitchen-7.jpg"
                   alt="Сервирани маси в механата"
                   fill
-                  sizes="(min-width: 1024px) 30vw, 45vw"
+                  quality={68}
+                  sizes="(min-width: 1024px) 30vw, (min-width: 640px) calc((100vw - 80px) / 2), calc((100vw - 64px) / 2)"
                   className="object-cover transition-transform duration-500 hover:scale-105"
                 />
               </div>
@@ -70,7 +74,8 @@ export function Kitchen() {
                   src="/gallery/kitchen/kitchen-9.jpg"
                   alt="Домашна баница, приготвена в механата"
                   fill
-                  sizes="(min-width: 1024px) 30vw, 45vw"
+                  quality={68}
+                  sizes="(min-width: 1024px) 30vw, (min-width: 640px) calc((100vw - 80px) / 2), calc((100vw - 64px) / 2)"
                   className="object-cover transition-transform duration-500 hover:scale-105"
                 />
               </div>

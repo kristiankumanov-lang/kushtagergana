@@ -39,7 +39,8 @@ export function LocationSection() {
                   src={ROUTE_MAP_SRC}
                   alt=""
                   fill
-                  sizes="(min-width: 1024px) 60vw, 100vw"
+                  quality={50}
+                  sizes="(min-width: 1024px) 60vw, (min-width: 640px) calc(100vw - 64px), calc(100vw - 48px)"
                   className="scale-110 object-cover blur"
                 />
                 <div className="absolute inset-0 bg-wood-900/75" />
