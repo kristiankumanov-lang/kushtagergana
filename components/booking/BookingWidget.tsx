@@ -35,13 +35,20 @@ export function BookingWidget({ initialAvailability }: BookingWidgetProps) {
     const nextErrors: Record<string, string> = {};
 
     if (!name.trim() || name.trim().length < 2) nextErrors.name = f.required;
+    else if (name.trim().length > 100) nextErrors.name = f.nameTooLong;
     if (!phone.trim() || !phoneRegex.test(phone.trim())) nextErrors.phone = f.invalidPhone;
     if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) nextErrors.email = f.invalidEmail;
-    if (!checkIn) nextErrors.checkIn = f.required;
-    if (!checkOut) nextErrors.checkOut = f.required;
+    if (!checkIn || Number.isNaN(Date.parse(checkIn))) nextErrors.checkIn = f.required;
+    if (!checkOut || Number.isNaN(Date.parse(checkOut))) nextErrors.checkOut = f.required;
     if (checkIn && checkOut && new Date(checkOut) <= new Date(checkIn)) {
       nextErrors.checkOut = f.invalidDates;
     }
+    // Matches bookingSchema's z.coerce.number().int().min(1).max(16) /
+    // .min(0).max(10) — the form has noValidate, so the <input min/max>
+    // attributes are decorative only and never actually block submission.
+    if (!Number.isInteger(adults) || adults < 1 || adults > 16) nextErrors.adults = f.invalidGuests;
+    if (!Number.isInteger(children) || children < 0 || children > 10) nextErrors.children = f.invalidGuests;
+    if (message.trim().length > 1000) nextErrors.message = f.messageTooLong;
     if (
       checkIn &&
       checkOut &&
@@ -164,35 +171,35 @@ export function BookingWidget({ initialAvailability }: BookingWidgetProps) {
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <Field label={f.adults}>
+          <Field label={f.adults} error={errors.adults}>
             <input
               type="number"
               min={1}
               max={16}
               value={adults}
               onChange={(e) => setAdults(Number(e.target.value))}
-              className={inputClass(false)}
+              className={inputClass(!!errors.adults)}
             />
           </Field>
-          <Field label={f.children}>
+          <Field label={f.children} error={errors.children}>
             <input
               type="number"
               min={0}
               max={10}
               value={children}
               onChange={(e) => setChildren(Number(e.target.value))}
-              className={inputClass(false)}
+              className={inputClass(!!errors.children)}
             />
           </Field>
         </div>
 
-        <Field label={f.message}>
+        <Field label={f.message} error={errors.message}>
           <textarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             placeholder={f.messagePlaceholder}
             rows={4}
-            className={inputClass(false)}
+            className={inputClass(!!errors.message)}
           />
         </Field>
 

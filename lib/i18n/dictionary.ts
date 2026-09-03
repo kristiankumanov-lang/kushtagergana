@@ -142,6 +142,9 @@ export interface Dictionary {
       invalidPhone: string;
       invalidDates: string;
       dateConflict: string;
+      nameTooLong: string;
+      messageTooLong: string;
+      invalidGuests: string;
     };
   };
   footer: {
@@ -358,6 +361,9 @@ const bg: Dictionary = {
       invalidPhone: "Моля, въведете валиден телефонен номер.",
       invalidDates: "Датата на напускане трябва да е след датата на настаняване.",
       dateConflict: "Избраните дати вече са заети. Моля, изберете друг период.",
+      nameTooLong: "Името е твърде дълго (макс. 100 символа).",
+      messageTooLong: "Съобщението е твърде дълго (макс. 1000 символа).",
+      invalidGuests: "Моля, въведете допустим брой гости.",
     },
   },
   footer: {
@@ -571,6 +577,9 @@ const en: Dictionary = {
       invalidPhone: "Please enter a valid phone number.",
       invalidDates: "Check-out date must be after check-in date.",
       dateConflict: "The selected dates are already booked. Please choose another period.",
+      nameTooLong: "Name is too long (max 100 characters).",
+      messageTooLong: "Message is too long (max 1000 characters).",
+      invalidGuests: "Please enter a valid guest count.",
     },
   },
   footer: {

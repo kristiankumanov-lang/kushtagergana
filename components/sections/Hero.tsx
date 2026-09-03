@@ -37,6 +37,7 @@ export function Hero() {
               fill
               preload
               fetchPriority="high"
+              loading="eager"
               quality={68}
               // Real slot: mx-auto max-w-md (448px) inside a px-6 (24px)
               // padded container below lg — matches exactly, not a vw guess.
