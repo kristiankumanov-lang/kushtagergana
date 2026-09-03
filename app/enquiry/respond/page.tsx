@@ -1,7 +1,7 @@
 import { format, parseISO } from "date-fns";
-import { bg } from "date-fns/locale";
 import { AlertCircle, CheckCircle2, Clock, XCircle } from "lucide-react";
 import { Container } from "@/components/ui/Container";
+import { formatDisplayDate } from "@/lib/dates";
 import {
   confirmEnquiry,
   loadEnquiryForToken,
@@ -11,10 +11,6 @@ import {
 import { SubmitButton } from "./SubmitButton";
 
 const cardClass = "rounded-2xl border border-wood-100 bg-parchment p-8 sm:p-10";
-
-function displayDate(value: string) {
-  return format(parseISO(value), "d MMMM yyyy", { locale: bg });
-}
 
 function EnquirySummary({ enquiry, full = false }: { enquiry: EnquiryView; full?: boolean }) {
   const message = enquiry.message?.trim();
@@ -26,8 +22,8 @@ function EnquirySummary({ enquiry, full = false }: { enquiry: EnquiryView; full?
         label="Телефон"
         value={<a className="hover:text-terracotta-700" href={`tel:${enquiry.phone}`}>{enquiry.phone}</a>}
       />
-      <Detail label="Настаняване" value={displayDate(enquiry.checkIn)} />
-      <Detail label="Напускане" value={displayDate(enquiry.checkOut)} />
+      <Detail label="Настаняване" value={formatDisplayDate(enquiry.checkIn)} />
+      <Detail label="Напускане" value={formatDisplayDate(enquiry.checkOut)} />
       {full && (
         <>
           <Detail
@@ -138,7 +134,9 @@ function UsedState({ state }: { state: Extract<RespondPageState, { kind: "alread
     <div className={`${cardClass} ${accentClass}`}>
       <Icon className="mb-5 size-12" />
       <h1 className="font-display text-2xl sm:text-3xl">{confirmed ? "Потвърдено" : "Отказано"}</h1>
-      <p className="mt-3">Отговорено на {format(parseISO(state.respondedAt), "d MMMM yyyy, HH:mm", { locale: bg })}.</p>
+      <p className="mt-3">
+        Отговорено на {formatDisplayDate(state.respondedAt)}, {format(parseISO(state.respondedAt), "HH:mm")}.
+      </p>
       <EnquirySummary enquiry={state.enquiry} />
       <p className="mt-6 font-semibold">Гостът е уведомен по имейл.</p>
     </div>
