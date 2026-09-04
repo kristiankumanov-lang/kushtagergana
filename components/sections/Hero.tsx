@@ -35,8 +35,13 @@ export function Hero() {
               src="/gallery/house/house-1.jpg"
               alt="Къщата за гости Гергана"
               fill
-              priority
-              sizes="(min-width: 1024px) 40vw, 90vw"
+              preload
+              fetchPriority="high"
+              loading="eager"
+              quality={68}
+              // Real slot: mx-auto max-w-md (448px) inside a px-6 (24px)
+              // padded container below lg — matches exactly, not a vw guess.
+              sizes="(min-width: 1024px) 40vw, min(448px, calc(100vw - 48px))"
               className="object-cover"
             />
           </div>

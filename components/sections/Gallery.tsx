@@ -62,7 +62,13 @@ export function Gallery() {
                 alt={t.gallery.categories[img.category]}
                 fill
                 loading="lazy"
-                sizes="(min-width: 1024px) 22vw, 45vw"
+                quality={68}
+                // Grid is 2 cols (<640, gap-3=12px, container px-6=24px),
+                // 3 cols (640-1024, container px-8=32px), 4 cols (>=1024,
+                // capped by the max-w-6xl/1152px container). The old
+                // "45vw" fallback ignored the 3-col breakpoint entirely —
+                // at e.g. 800px it demanded 360px for a real ~237px slot.
+                sizes="(min-width: 1024px) min(263px, 22vw), (min-width: 640px) calc((100vw - 88px) / 3), calc((100vw - 60px) / 2)"
                 className="object-cover transition-transform duration-500 group-hover:scale-110"
               />
             </button>
@@ -104,7 +110,9 @@ export function Gallery() {
               src={images[lightboxIndex].src}
               alt={t.gallery.categories[images[lightboxIndex].category]}
               fill
-              sizes="92vw"
+              quality={68}
+              // Box is w-[92vw] max-w-4xl (896px) — cap it there too.
+              sizes="min(896px, 92vw)"
               className="rounded-lg object-contain"
             />
           </div>
