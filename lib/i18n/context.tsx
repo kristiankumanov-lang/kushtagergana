@@ -1,7 +1,8 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { defaultLocale, dictionaries, type Dictionary, type Locale } from "./dictionary";
+import { createContext, useCallback, useContext, useMemo } from "react";
+import { useRouter } from "next/navigation";
+import { dictionaries, type Dictionary, type Locale } from "./dictionary";
 
 interface LanguageContextValue {
   locale: Locale;
@@ -12,30 +13,37 @@ interface LanguageContextValue {
 
 const LanguageContext = createContext<LanguageContextValue | null>(null);
 
-const STORAGE_KEY = "gergana-locale";
+// i18n routing: the URL is now the single source of truth for locale
+// ("/" is bg, "/en" is en — see app/[[...locale]]/layout.tsx). This
+// provider no longer owns any locale state of its own; `locale` is
+// whatever its parent (server) layout resolved from the route params, and
+// setLocale/toggleLocale are navigation helpers, not state setters.
+//
+// Previously this read/wrote a `gergana-locale` localStorage key and
+// flipped client state on toggle — that made the language invisible to
+// crawlers, since the URL never changed and Google only ever saw the bg
+// markup. See the i18n routing brief.
+export function LanguageProvider({
+  locale,
+  children,
+}: {
+  locale: Locale;
+  children: React.ReactNode;
+}) {
+  const router = useRouter();
 
-export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>(defaultLocale);
-
-  useEffect(() => {
-    const stored = window.localStorage.getItem(STORAGE_KEY);
-    if (stored === "bg" || stored === "en") {
-      // Reading localStorage during render would desync from the
-      // server-rendered "bg" markup and break hydration, so the stored
-      // preference is applied after mount instead.
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setLocaleState(stored);
-    }
-  }, []);
-
-  useEffect(() => {
-    document.documentElement.lang = locale;
-  }, [locale]);
-
-  const setLocale = useCallback((next: Locale) => {
-    setLocaleState(next);
-    window.localStorage.setItem(STORAGE_KEY, next);
-  }, []);
+  const setLocale = useCallback(
+    (next: Locale) => {
+      if (next === locale) return;
+      const path = next === "bg" ? "/" : "/en";
+      // Preserve the current in-page section (e.g. "#kitchen") across the
+      // switch when reasonably possible — section ids aren't translated,
+      // so the same hash resolves to the same section on both routes.
+      const hash = typeof window !== "undefined" ? window.location.hash : "";
+      router.push(`${path}${hash}`);
+    },
+    [locale, router]
+  );
 
   const toggleLocale = useCallback(() => {
     setLocale(locale === "bg" ? "en" : "bg");

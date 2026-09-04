@@ -3,6 +3,14 @@ export type Locale = (typeof locales)[number];
 export const defaultLocale: Locale = "bg";
 
 export interface Dictionary {
+  meta: {
+    siteName: string;
+    title: string;
+    description: string;
+    keywords: string[];
+    ogTitle: string;
+    ogDescription: string;
+  };
   nav: {
     logoAlt: string;
     about: string;
@@ -163,6 +171,23 @@ export interface Dictionary {
 }
 
 const bg: Dictionary = {
+  meta: {
+    siteName: "Къща за гости Гергана",
+    title: "Къща за гости Гергана – Радуил, Рила планина | Нощувка близо до Боровец",
+    description:
+      "Къща за гости в село Радуил, на 10 минути от ски курорта Боровец. Планински уют, камина, басейн и домашна кухня с пресни продукти. Проверете свободни дати и резервирайте директно.",
+    keywords: [
+      "къща за гости Радуил",
+      "нощувка близо до Боровец",
+      "домашна кухня Рила",
+      "къща за гости Рила планина",
+      "къща за гости с басейн Рила",
+      "ски почивка Боровец",
+      "guest house Raduil",
+    ],
+    ogTitle: "Къща за гости Гергана – Радуил, Рила планина",
+    ogDescription: "Планински уют и домашна кухня на 10 минути от Боровец. Вашият дом в полите на Рила.",
+  },
   nav: {
     logoAlt: "Къща за гости Гергана - лого",
     about: "За къщата",
@@ -385,6 +410,22 @@ const bg: Dictionary = {
 };
 
 const en: Dictionary = {
+  meta: {
+    siteName: "Guest House Gergana",
+    title: "Guest House Gergana – Raduil, Rila Mountain | Stay Near Borovets",
+    description:
+      "Guest house in the village of Raduil, 10 minutes from the Borovets ski resort. Mountain comfort, fireplace, pool and home cooking with fresh ingredients. Check availability and book directly.",
+    keywords: [
+      "guest house Raduil",
+      "accommodation near Borovets",
+      "home cooking Rila",
+      "guest house Rila mountain",
+      "guest house with pool Rila",
+      "ski holiday Borovets",
+    ],
+    ogTitle: "Guest House Gergana – Raduil, Rila Mountain",
+    ogDescription: "Mountain comfort and home cooking 10 minutes from Borovets. Your home in the foothills of Rila.",
+  },
   nav: {
     logoAlt: "Guest House Gergana - logo",
     about: "The House",

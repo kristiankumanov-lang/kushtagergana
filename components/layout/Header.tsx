@@ -1,15 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/context";
+import { localePath } from "@/lib/i18n/routing";
 import { Container } from "@/components/ui/Container";
 import { Logo } from "@/components/ui/Logo";
 
 export function Header() {
-  const { t, locale, toggleLocale } = useLanguage();
+  const { t, locale } = useLanguage();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [hash, setHash] = useState("");
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -17,6 +20,22 @@ export function Header() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    // i18n routing: the language switch is a real link to the sibling
+    // locale route now (see below), not a state flip — this keeps its
+    // target in sync with the current in-page section (e.g. "#kitchen")
+    // so switching languages lands on the same section instead of always
+    // jumping back to the top. Section ids aren't translated, so the same
+    // hash resolves correctly on both routes.
+    const syncHash = () => setHash(window.location.hash);
+    syncHash();
+    window.addEventListener("hashchange", syncHash);
+    return () => window.removeEventListener("hashchange", syncHash);
+  }, []);
+
+  const otherLocale = locale === "bg" ? "en" : "bg";
+  const otherLocaleHref = `${localePath(otherLocale)}${hash}`;
 
   const links = [
     { href: "#about", label: t.nav.about },
@@ -61,13 +80,13 @@ export function Header() {
           ))}
         </nav>
 
-        <button
-          onClick={toggleLocale}
+        <Link
+          href={otherLocaleHref}
           aria-label="Switch language"
           className="hidden text-sm font-semibold text-ink-soft transition-colors hover:text-terracotta-500 lg:block"
         >
           {locale === "bg" ? "EN" : "BG"}
-        </button>
+        </Link>
 
         <button
           className="lg:hidden text-ink"
@@ -92,12 +111,9 @@ export function Header() {
               </a>
             ))}
             <div className="mt-2 flex items-center gap-3 px-3">
-              <button
-                onClick={toggleLocale}
-                className="text-sm font-semibold text-ink-soft"
-              >
+              <Link href={otherLocaleHref} onClick={() => setOpen(false)} className="text-sm font-semibold text-ink-soft">
                 {locale === "bg" ? "English" : "Български"}
-              </button>
+              </Link>
             </div>
           </Container>
         </div>
