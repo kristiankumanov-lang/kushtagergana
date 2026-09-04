@@ -66,6 +66,17 @@ export function Footer() {
           <p className="text-xs text-cream/70">
             © {year} Къща за гости Гергана · Радуил. {t.footer.rights}
           </p>
+          <p className="mt-1 text-xs text-cream/70">
+            {t.footer.madeBy}{" "}
+            <a
+              href="https://www.facebook.com/profile.php?id=61590868000717"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline decoration-cream/30 underline-offset-4 hover:text-terracotta-300"
+            >
+              Kumanov AI Studio
+            </a>
+          </p>
         </Container>
       </div>
     </footer>

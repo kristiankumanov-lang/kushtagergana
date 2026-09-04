@@ -156,6 +156,7 @@ export interface Dictionary {
     followUs: string;
     rights: string;
     bookingBadge: string;
+    madeBy: string;
   };
   common: {
     langSwitch: string;
@@ -378,6 +379,7 @@ const bg: Dictionary = {
     followUs: "Последвайте ни",
     rights: "Всички права запазени.",
     bookingBadge: "Намерете ни и в Booking.com",
+    madeBy: "Създадено от",
   },
   common: {
     langSwitch: "EN",
@@ -597,6 +599,7 @@ const en: Dictionary = {
     followUs: "Follow us",
     rights: "All rights reserved.",
     bookingBadge: "Find us on Booking.com too",
+    madeBy: "Made by",
   },
   common: {
     langSwitch: "BG",
