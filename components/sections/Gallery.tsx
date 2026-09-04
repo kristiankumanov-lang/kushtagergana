@@ -50,29 +50,36 @@ export function Gallery() {
         </div>
 
         <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-          {images.map((img, i) => (
-            <button
-              key={img.src}
-              onClick={() => setLightboxIndex(i)}
-              className="group relative aspect-square overflow-hidden rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-terracotta-500"
-              aria-label={t.gallery.categories[img.category]}
-            >
-              <Image
-                src={img.src}
-                alt={t.gallery.categories[img.category]}
-                fill
-                loading="lazy"
-                quality={68}
-                // Grid is 2 cols (<640, gap-3=12px, container px-6=24px),
-                // 3 cols (640-1024, container px-8=32px), 4 cols (>=1024,
-                // capped by the max-w-6xl/1152px container). The old
-                // "45vw" fallback ignored the 3-col breakpoint entirely —
-                // at e.g. 800px it demanded 360px for a real ~237px slot.
-                sizes="(min-width: 1024px) min(263px, 22vw), (min-width: 640px) calc((100vw - 88px) / 3), calc((100vw - 60px) / 2)"
-                className="object-cover transition-transform duration-500 group-hover:scale-110"
-              />
-            </button>
-          ))}
+          {images.map((img, i) => {
+            // Falls back to the category label only for an id that somehow
+            // has no altTexts entry (shouldn't happen — every GalleryImage
+            // in lib/gallery.ts has a matching key) so a typo degrades
+            // gracefully instead of rendering alt="undefined".
+            const alt = t.gallery.altTexts[img.id] ?? t.gallery.categories[img.category];
+            return (
+              <button
+                key={img.id}
+                onClick={() => setLightboxIndex(i)}
+                className="group relative aspect-square overflow-hidden rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-terracotta-500"
+                aria-label={alt}
+              >
+                <Image
+                  src={img.src}
+                  alt={alt}
+                  fill
+                  loading="lazy"
+                  quality={68}
+                  // Grid is 2 cols (<640, gap-3=12px, container px-6=24px),
+                  // 3 cols (640-1024, container px-8=32px), 4 cols (>=1024,
+                  // capped by the max-w-6xl/1152px container). The old
+                  // "45vw" fallback ignored the 3-col breakpoint entirely —
+                  // at e.g. 800px it demanded 360px for a real ~237px slot.
+                  sizes="(min-width: 1024px) min(263px, 22vw), (min-width: 640px) calc((100vw - 88px) / 3), calc((100vw - 60px) / 2)"
+                  className="object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+              </button>
+            );
+          })}
         </div>
       </Container>
 
@@ -108,7 +115,7 @@ export function Gallery() {
           >
             <Image
               src={images[lightboxIndex].src}
-              alt={t.gallery.categories[images[lightboxIndex].category]}
+              alt={t.gallery.altTexts[images[lightboxIndex].id] ?? t.gallery.categories[images[lightboxIndex].category]}
               fill
               quality={68}
               // Box is w-[92vw] max-w-4xl (896px) — cap it there too.
