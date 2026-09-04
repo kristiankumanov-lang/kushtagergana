@@ -12,7 +12,7 @@ interface BookingWidgetProps {
   initialAvailability: AvailabilityResponse;
 }
 
-type SubmitState = "idle" | "submitting" | "success" | "error";
+type SubmitState = "idle" | "submitting" | "success" | "error" | "rate_limited";
 
 const phoneRegex = /^[+]?[\d\s\-().]{7,20}$/;
 
@@ -28,9 +28,13 @@ export function BookingWidget({ initialAvailability }: BookingWidgetProps) {
   const [adults, setAdults] = useState(2);
   const [children, setChildren] = useState(0);
   const [message, setMessage] = useState("");
+  // Honeypot: hidden from real users via CSS. Bots fill every field they
+  // find, so a non-empty value here means the submission is a bot.
+  const [company, setCompany] = useState("");
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitState, setSubmitState] = useState<SubmitState>("idle");
+  const [fallbackPhone, setFallbackPhone] = useState<string | null>(null);
 
   function validate(): boolean {
     const nextErrors: Record<string, string> = {};
@@ -72,6 +76,7 @@ export function BookingWidget({ initialAvailability }: BookingWidgetProps) {
         children,
         message,
         locale,
+        company,
       });
 
       const res = await fetch("/api/booking", {
@@ -85,8 +90,14 @@ export function BookingWidget({ initialAvailability }: BookingWidgetProps) {
         setSubmitState("error");
         return;
       }
+      if (res.status === 429) {
+        setSubmitState("rate_limited");
+        return;
+      }
       if (!res.ok) throw new Error("request_failed");
 
+      const json: { ok: boolean; emailSent?: boolean; phone?: string } = await res.json();
+      setFallbackPhone(json.emailSent === false && json.phone ? json.phone : null);
       setSubmitState("success");
     } catch {
       setSubmitState("error");
@@ -98,7 +109,9 @@ export function BookingWidget({ initialAvailability }: BookingWidgetProps) {
       <div className="flex flex-col items-center gap-3 rounded-2xl border border-forest-300 bg-forest-100 p-10 text-center">
         <CheckCircle2 className="size-12 text-forest-700" />
         <h3 className="font-display text-2xl text-forest-900">{f.successTitle}</h3>
-        <p className="max-w-md text-ink-soft">{f.successText}</p>
+        <p className="max-w-md text-ink-soft">
+          {fallbackPhone ? f.successTextEmailFailed.replace("{phone}", fallbackPhone) : f.successText}
+        </p>
       </div>
     );
   }
@@ -192,9 +205,31 @@ export function BookingWidget({ initialAvailability }: BookingWidgetProps) {
           />
         </Field>
 
+        {/* Honeypot — invisible to sighted users, off the tab order, never
+            autofilled. A filled value means the submission is a bot. */}
+        <div className="absolute -left-[9999px] h-px w-px overflow-hidden" aria-hidden="true">
+          <label>
+            Company
+            <input
+              type="text"
+              name="company"
+              tabIndex={-1}
+              autoComplete="off"
+              value={company}
+              onChange={(e) => setCompany(e.target.value)}
+            />
+          </label>
+        </div>
+
         {submitState === "error" && !errors.checkOut && (
           <p className="flex items-center gap-2 text-sm text-terracotta-700">
             <XCircle className="size-4" /> {f.errorText}
+          </p>
+        )}
+
+        {submitState === "rate_limited" && (
+          <p className="flex items-center gap-2 text-sm text-terracotta-700">
+            <XCircle className="size-4" /> {f.rateLimited}
           </p>
         )}
 

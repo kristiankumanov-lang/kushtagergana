@@ -135,8 +135,10 @@ export interface Dictionary {
       submitting: string;
       successTitle: string;
       successText: string;
+      successTextEmailFailed: string;
       errorTitle: string;
       errorText: string;
+      rateLimited: string;
       required: string;
       invalidEmail: string;
       invalidPhone: string;
@@ -351,8 +353,11 @@ const bg: Dictionary = {
       submitting: "Изпращане…",
       successTitle: "Получихме заявката ви!",
       successText: "Ще се свържем с вас до няколко часа, за да потвърдим резервацията.",
+      successTextEmailFailed:
+        "Получихме заявката ви, но известието не успя да се изпрати автоматично. За по-сигурно, обадете се на {phone}.",
       errorTitle: "Нещо се обърка",
       errorText: "Моля, опитайте отново или ни пишете директно на имейл.",
+      rateLimited: "Изпратихте твърде много заявки. Моля, опитайте отново след час или ни се обадете директно.",
       required: "Това поле е задължително.",
       invalidEmail: "Моля, въведете валиден имейл адрес.",
       invalidPhone: "Моля, въведете валиден телефонен номер.",
@@ -564,8 +569,11 @@ const en: Dictionary = {
       submitting: "Sending…",
       successTitle: "We got your request!",
       successText: "We'll contact you within a few hours to confirm your booking.",
+      successTextEmailFailed:
+        "We received your request, but the automatic notification failed to send. To be safe, please call us at {phone}.",
       errorTitle: "Something went wrong",
       errorText: "Please try again or email us directly.",
+      rateLimited: "You've sent too many requests. Please try again in an hour, or call us directly.",
       required: "This field is required.",
       invalidEmail: "Please enter a valid email address.",
       invalidPhone: "Please enter a valid phone number.",

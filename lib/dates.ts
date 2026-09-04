@@ -6,6 +6,15 @@ export function toDateKey(date: Date): string {
 }
 
 /**
+ * DD.MM.YYYY — the display format used everywhere a booking date is shown
+ * to a human (email bodies/subjects, the enquiry-respond page). Centralized
+ * so every caller stays consistent instead of hand-formatting per template.
+ */
+export function formatDisplayDate(isoDate: string): string {
+  return format(parseISO(isoDate), "dd.MM.yyyy");
+}
+
+/**
  * Booking.com iCal ranges use an exclusive end (checkout day is free).
  * Expands each range into the set of individual *booked night* date keys.
  */
