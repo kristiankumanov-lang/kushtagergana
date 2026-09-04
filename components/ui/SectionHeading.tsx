@@ -16,7 +16,7 @@ export function SectionHeading({
     <div className={`flex flex-col gap-3 ${alignClass}`}>
       {kicker && (
         <span
-          className={`font-hand text-2xl ${light ? "text-terracotta-300" : "text-terracotta-500"}`}
+          className={`font-display italic text-2xl ${light ? "text-terracotta-300" : "text-terracotta-500"}`}
         >
           {kicker}
         </span>

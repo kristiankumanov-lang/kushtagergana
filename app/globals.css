@@ -47,7 +47,6 @@
 
   --font-display: var(--font-playfair), "Georgia", serif;
   --font-sans: var(--font-inter), "Segoe UI", sans-serif;
-  --font-hand: var(--font-caveat), cursive;
 
   --animate-fade-in: fade-in 0.25s ease-out forwards;
   --animate-kenburns: kenburns 22s ease-in-out infinite alternate;
