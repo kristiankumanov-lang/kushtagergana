@@ -201,7 +201,7 @@ export function BookingWidget({ initialAvailability }: BookingWidgetProps) {
         <button
           type="submit"
           disabled={submitState === "submitting"}
-          className="mt-2 flex items-center justify-center gap-2 rounded-full bg-accent-500 px-6 py-3.5 text-sm font-semibold text-cream transition-colors hover:bg-accent-600 disabled:opacity-60"
+          className="mt-2 flex items-center justify-center gap-2 rounded-full bg-accent-600 px-6 py-3.5 text-sm font-semibold text-cream transition-colors hover:bg-accent-600 disabled:opacity-60"
         >
           {submitState === "submitting" && <Loader2 className="size-4 animate-spin" />}
           {submitState === "submitting" ? f.submitting : f.submit}

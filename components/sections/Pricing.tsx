@@ -52,7 +52,7 @@ export function Pricing() {
 
           <a
             href="#booking"
-            className="rounded-full bg-accent-500 px-6 py-3 text-center text-sm font-semibold text-cream transition-colors hover:bg-accent-600"
+            className="rounded-full bg-accent-600 px-6 py-3 text-center text-sm font-semibold text-cream transition-colors hover:bg-accent-600"
           >
             {t.hero.cta}
           </a>

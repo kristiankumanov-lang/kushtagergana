@@ -121,7 +121,7 @@ export function Calendar({ busy, checkIn, checkOut, onSelect }: CalendarProps) {
         </button>
       </div>
 
-      <div className="mt-4 grid grid-cols-7 gap-1 text-center text-xs font-medium text-ink-soft/70">
+      <div className="mt-4 grid grid-cols-7 gap-1 text-center text-xs font-medium text-ink-soft/80">
         {weekdayLabels.map((d) => (
           <span key={d}>{d}</span>
         ))}

@@ -63,7 +63,7 @@ export function Footer() {
 
       <div className="border-t border-cream/10 py-5">
         <Container>
-          <p className="text-xs text-cream/50">
+          <p className="text-xs text-cream/70">
             © {year} Къща за гости Гергана · Радуил. {t.footer.rights}
           </p>
         </Container>

@@ -20,7 +20,7 @@ export function Hero() {
           <div className="mt-2 flex flex-wrap items-center gap-4">
             <a
               href="#booking"
-              className="rounded-full bg-accent-500 px-7 py-3.5 text-sm font-semibold text-cream shadow-lg shadow-wood-900/20 transition-colors hover:bg-accent-600 sm:text-base"
+              className="rounded-full bg-accent-600 px-7 py-3.5 text-sm font-semibold text-cream shadow-lg shadow-wood-900/20 transition-colors hover:bg-accent-600 sm:text-base"
             >
               {t.hero.cta}
             </a>

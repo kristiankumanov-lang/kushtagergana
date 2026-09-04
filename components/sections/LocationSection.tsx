@@ -68,13 +68,13 @@ export function LocationSection() {
                   className="flex items-center justify-between rounded-xl border border-wood-100 bg-parchment px-5 py-4"
                 >
                   <span className="text-sm font-medium text-ink-soft sm:text-base">{d.label}</span>
-                  <span className="font-display text-lg text-terracotta-500">{d.value}</span>
+                  <span className="font-display text-lg text-terracotta-700">{d.value}</span>
                 </div>
               ))}
             </div>
 
             <div className="rounded-xl bg-wood-100/50 p-5">
-              <h4 className="font-display text-xl text-ink">{t.location.directionsTitle}</h4>
+              <h3 className="font-display text-xl text-ink">{t.location.directionsTitle}</h3>
               <p className="mt-2 text-sm text-ink-soft sm:text-base">{t.location.directionsText}</p>
             </div>
 
@@ -82,7 +82,7 @@ export function LocationSection() {
               href={MAPS_LINK}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-accent-500 px-6 py-3 text-sm font-semibold text-cream transition-colors hover:bg-accent-600"
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-accent-600 px-6 py-3 text-sm font-semibold text-cream transition-colors hover:bg-accent-600"
             >
               <Navigation className="size-4" />
               {t.location.mapCta}
