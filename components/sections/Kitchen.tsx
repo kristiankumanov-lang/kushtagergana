@@ -23,7 +23,7 @@ export function Kitchen() {
             ))}
             <div className="mt-2 flex items-center gap-2 text-forest-700">
               <Leaf className="size-5" strokeWidth={1.75} />
-              <span className="font-hand text-xl">{t.kitchen.freshNote}</span>
+              <span className="font-display italic text-xl">{t.kitchen.freshNote}</span>
             </div>
           </div>
 

@@ -11,7 +11,7 @@ export function Hero() {
     <section id="top" className="scroll-mt-20 bg-cream pt-16 pb-14 sm:pt-20 sm:pb-16 lg:pt-24 lg:pb-20">
       <div className="mx-auto grid w-full max-w-6xl gap-12 px-6 sm:px-8 lg:grid-cols-2 lg:items-center lg:gap-16">
         <div className="flex flex-col items-start gap-6">
-          <span className="font-hand text-2xl sm:text-3xl text-terracotta-500">{t.hero.kicker}</span>
+          <span className="font-display italic text-2xl sm:text-3xl text-terracotta-500">{t.hero.kicker}</span>
           <h1 className="max-w-xl font-display text-4xl leading-[1.1] text-ink sm:text-5xl md:text-6xl">
             {t.hero.title}
           </h1>

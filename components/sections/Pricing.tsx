@@ -41,7 +41,7 @@ export function Pricing() {
 
         <div className="mt-6 flex flex-col gap-5 rounded-2xl bg-wood-900 p-7 text-cream sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-col gap-2">
-            <span className="font-hand text-2xl text-terracotta-300">{t.pricing.directBadge}</span>
+            <span className="font-display italic text-2xl text-terracotta-300">{t.pricing.directBadge}</span>
             <p className="text-sm text-cream/80 sm:text-base">{t.pricing.directBadgeSub}</p>
             <div className="mt-1 flex items-center gap-2.5">
               <Users className="size-5 text-terracotta-300" />

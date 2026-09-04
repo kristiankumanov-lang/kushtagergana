@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Caveat, Inter, Playfair_Display } from "next/font/google";
+import { Inter, Playfair_Display } from "next/font/google";
 import { LanguageProvider } from "@/lib/i18n/context";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -8,19 +8,22 @@ import "./globals.css";
 const playfair = Playfair_Display({
   variable: "--font-playfair",
   subsets: ["latin", "cyrillic"],
-  // italic was requested but is never actually used anywhere in the
-  // rendered site — the only `italic` CSS class in the codebase
-  // (RatingStrip.tsx testimonial quotes) applies to body/Inter text via
-  // faux-italic, not Playfair. Requesting it forced 2 extra preloaded
-  // font files (~60KB) to fight the hero image for bandwidth for no
-  // visual benefit. Drop to normal-only.
-  //
+  // italic reinstated (perf #5, part A2): Caveat was removed entirely —
+  // 148 KiB for one decorative kicker line, and every bg text rendered in
+  // it (kicker "·", freshNote's commas/period, directBadge's mid-word
+  // hyphen) forced BOTH its latin and cyrillic files to load regardless
+  // of how the individual usages were split up, since Cyrillic prose
+  // routinely contains latin-range punctuation. Playfair already loads
+  // both subsets for its normal weight (the calendar's "Септември 2026"
+  // has digits), so italic here is additive, not a new dual-subset cost.
+  // `.font-hand` is gone; former call sites use `font-display italic`.
+  style: ["normal", "italic"],
   // preload:false (perf #4, part B): renders the Hero h1, but so does
-  // Inter (subtitle) and Caveat (kicker) below — all three compete with
-  // the LCP image for bandwidth if preloaded. Measured LCP 2109ms -> 1991ms
-  // with this off, CLS unchanged at 0 (next/font's fallback is
-  // metric-matched, no reflow on swap). FOUT window is brief and doesn't
-  // affect layout — see the perf #4 report for screenshots.
+  // Inter (subtitle) below — both compete with the LCP image for
+  // bandwidth if preloaded. Measured LCP 2109ms -> 1991ms with this off,
+  // CLS unchanged at 0 (next/font's fallback is metric-matched, no
+  // reflow on swap). FOUT window is brief and doesn't affect layout —
+  // see the perf #4 report for screenshots.
   preload: false,
 });
 
@@ -29,17 +32,6 @@ const inter = Inter({
   subsets: ["latin", "cyrillic"],
   // preload:false (perf #4, part B): renders Hero subtitle/CTA + nav.
   // Measured LCP 1991ms -> 1940ms with this off, CLS unchanged at 0.
-  preload: false,
-});
-
-const caveat = Caveat({
-  variable: "--font-caveat",
-  subsets: ["latin", "cyrillic"],
-  // perf #4 A1: Caveat is 148 KiB for one decorative Hero kicker line —
-  // both subsets were preloading at High priority, fighting the LCP image
-  // for bandwidth. display:swap is already on, so dropping preload just
-  // defers the fetch (via unicode-range CSS discovery) instead of forcing
-  // it eagerly; the kicker still paints immediately with its fallback.
   preload: false,
 });
 
@@ -86,7 +78,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="bg" className={`${playfair.variable} ${inter.variable} ${caveat.variable} antialiased`}>
+    <html lang="bg" className={`${playfair.variable} ${inter.variable} antialiased`}>
       <body className="flex min-h-screen flex-col bg-cream text-ink">
         <LanguageProvider>
           <Header />
