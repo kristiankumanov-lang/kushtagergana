@@ -19,6 +19,7 @@ const bg = {
   },
   geo: { "@type": "GeoCoordinates", latitude: 42.2813711, longitude: 23.6887679 },
   telephone: "+359888812931",
+  email: "gerganaguesthouse@gmail.com",
   priceRange: "25-40 EUR",
   amenityFeature: [
     { "@type": "LocationFeatureSpecification", name: "Камина" },
@@ -46,6 +47,7 @@ const en = {
   },
   geo: { "@type": "GeoCoordinates", latitude: 42.2813711, longitude: 23.6887679 },
   telephone: "+359888812931",
+  email: "gerganaguesthouse@gmail.com",
   priceRange: "25-40 EUR",
   amenityFeature: [
     { "@type": "LocationFeatureSpecification", name: "Fireplace" },
