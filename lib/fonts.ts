@@ -12,13 +12,15 @@ export const playfair = Playfair_Display({
   subsets: ["latin", "cyrillic"],
   // italic reinstated (perf #5, part A2): Caveat was removed entirely —
   // 148 KiB for one decorative kicker line, and every bg text rendered in
-  // it (kicker "·", freshNote's commas/period, directBadge's mid-word
-  // hyphen) forced BOTH its latin and cyrillic files to load regardless
-  // of how the individual usages were split up, since Cyrillic prose
-  // routinely contains latin-range punctuation. Playfair already loads
-  // both subsets for its normal weight (the calendar's "Септември 2026"
-  // has digits), so italic here is additive, not a new dual-subset cost.
-  // `.font-hand` is gone; former call sites use `font-display italic`.
+  // it (kicker "·", the former kitchen.freshNote's commas/period, directBadge's
+  // mid-word hyphen) forced BOTH its latin and cyrillic files to load
+  // regardless of how the individual usages were split up, since Cyrillic
+  // prose routinely contains latin-range punctuation. Playfair already
+  // loads both subsets for its normal weight (the calendar's "Септември
+  // 2026" has digits), so italic here is additive, not a new dual-subset
+  // cost. `.font-hand` is gone; former call sites use `font-display
+  // italic`. (freshNote itself was later removed — final-touches round —
+  // but the other two triggers still apply, so this reasoning stands.)
   style: ["normal", "italic"],
   // perf #5, part A3: no element in the codebase applies a font-weight
   // utility on top of `font-display` — every Playfair heading/kicker

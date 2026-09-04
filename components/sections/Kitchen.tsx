@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { Leaf } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/context";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
@@ -14,17 +13,18 @@ export function Kitchen() {
       <Container>
         <SectionHeading kicker={t.kitchen.kicker} heading={t.kitchen.heading} />
 
-        <div className="mt-12 grid gap-10 lg:grid-cols-5 lg:items-start">
+        {/* final-touches: was lg:items-start — with freshNote gone the text
+            column is noticeably shorter than the photo grid beside it, so
+            top-aligning left a large empty gap under the two paragraphs on
+            desktop. Center-aligning keeps it balanced regardless of exactly
+            how much text/photos each side ends up with. */}
+        <div className="mt-12 grid gap-10 lg:grid-cols-5 lg:items-center">
           <div className="flex flex-col gap-5 lg:col-span-2">
             {t.kitchen.paragraphs.map((p) => (
               <p key={p} className="text-base leading-relaxed text-ink-soft sm:text-lg">
                 {p}
               </p>
             ))}
-            <div className="mt-2 flex items-center gap-2 text-forest-700">
-              <Leaf className="size-5" strokeWidth={1.75} />
-              <span className="font-display italic text-xl">{t.kitchen.freshNote}</span>
-            </div>
           </div>
 
           <div className="flex flex-col gap-4 lg:col-span-3">

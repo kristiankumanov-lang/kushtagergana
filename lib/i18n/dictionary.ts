@@ -69,7 +69,6 @@ export interface Dictionary {
     breakfastText: string;
     dinnerTitle: string;
     dinnerText: string;
-    freshNote: string;
   };
   gallery: {
     kicker: string;
@@ -278,7 +277,6 @@ const bg: Dictionary = {
     dinnerTitle: "Обяд и вечеря по желание",
     dinnerText:
       "При заявка сервираме традиционна българска кухня в механата – за обяд или вечеря, без да напускате къщата.",
-    freshNote: "Винаги пресни и по възможност домашни продукти.",
   },
   gallery: {
     kicker: "Погледнете отблизо",
@@ -576,7 +574,6 @@ const en: Dictionary = {
     dinnerTitle: "Lunch & dinner on request",
     dinnerText:
       "With advance notice we serve traditional Bulgarian cuisine in the tavern – for lunch or dinner, without leaving the house.",
-    freshNote: "Always fresh and, where possible, homemade produce.",
   },
   gallery: {
     kicker: "Take a closer look",
