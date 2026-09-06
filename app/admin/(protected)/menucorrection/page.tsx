@@ -10,8 +10,12 @@ import { PrintButton } from "./PrintButton";
 interface MenuItem {
   id: string;
   name: string;
+  description: string | null;
   price: string;
   category: "bar" | "kitchen";
+  subcategory: string;
+  subcategory_order: number;
+  sort_order: number;
   available: boolean;
 }
 
@@ -24,12 +28,21 @@ function displayPrice(price: string) {
   return `${Number(price).toFixed(2)} €`;
 }
 
+function subcategoriesFor(items: MenuItem[], category: MenuItem["category"]) {
+  const categoryItems = items.filter((item) => item.category === category);
+  return Array.from(new Set(categoryItems.map((item) => item.subcategory))).map((subcategory) => ({
+    name: subcategory,
+    items: categoryItems.filter((item) => item.subcategory === subcategory),
+  }));
+}
+
 export default async function MenuCorrectionPage() {
   const sql = getSql();
   const items = await sql<MenuItem[]>`
-    select id, name, price::text as price, category, available
+    select id, name, description, price::text as price, category,
+      subcategory, subcategory_order, sort_order, available
     from guesthouse.menu_items
-    order by category, sort_order, name
+    order by category, subcategory_order, subcategory, sort_order, name
   `;
 
   return (
@@ -46,13 +59,26 @@ export default async function MenuCorrectionPage() {
         {items.length === 0 ? (
           <p className="rounded-2xl bg-white p-5 text-ink-soft">Все още няма артикули.</p>
         ) : (
-          items.map((item) => (
+          (["bar", "kitchen"] as const).map((category) => {
+            const subcategories = subcategoriesFor(items, category);
+            if (subcategories.length === 0) return null;
+            return (
+              <div key={category} className="space-y-4">
+                <h2 className="font-display text-3xl text-wood-900">{categoryLabels[category]}</h2>
+                {subcategories.map((subcategory) => (
+                  <section key={subcategory.name} className="space-y-3" aria-labelledby={`${category}-${subcategory.name}`}>
+                    <h3 id={`${category}-${subcategory.name}`} className="text-xl font-semibold text-wood-700">
+                      {subcategory.name}
+                    </h3>
+                    {subcategory.items.map((item) => (
             <article key={item.id} className="rounded-2xl bg-white p-4 shadow-sm sm:p-5">
               <div className="flex flex-wrap items-center gap-4">
                 <div className="min-w-0 flex-1">
-                  <h2 className="break-words text-xl font-bold">{item.name}</h2>
+                  <h4 className="break-words text-xl font-bold">{item.name}</h4>
+                  {/* Future order-screen item buttons should remain name + price only. */}
+                  {item.description && <p className="mt-1 text-sm text-ink-soft">{item.description}</p>}
                   <p className="mt-1 text-lg text-ink-soft">
-                    {displayPrice(item.price)} · {categoryLabels[item.category]}
+                    {displayPrice(item.price)} · {subcategory.name}
                   </p>
                 </div>
                 <form action={toggleAvailabilityAction}>
@@ -93,7 +119,12 @@ export default async function MenuCorrectionPage() {
                 </form>
               </details>
             </article>
-          ))
+                    ))}
+                  </section>
+                ))}
+              </div>
+            );
+          })
         )}
       </section>
 
@@ -115,6 +146,14 @@ export default async function MenuCorrectionPage() {
               <option value="bar">Бар</option>
             </select>
           </label>
+          <label className="font-semibold">
+            Група
+            <input className="mt-2 min-h-12 w-full rounded-xl border-2 border-wood-300 px-3 text-lg" name="subcategory" required />
+          </label>
+          <label className="font-semibold">
+            Описание <span className="font-normal text-ink-soft">(по желание)</span>
+            <input className="mt-2 min-h-12 w-full rounded-xl border-2 border-wood-300 px-3 text-lg" name="description" />
+          </label>
           <button className="min-h-14 rounded-xl bg-accent-500 px-5 text-lg font-bold text-white hover:bg-accent-600 sm:col-span-2" type="submit">
             Добави артикул
           </button>
@@ -127,19 +166,28 @@ export default async function MenuCorrectionPage() {
 
       <section className="hidden print:block" aria-label="Меню за печат">
         {(["bar", "kitchen"] as const).map((category) => {
-          const availableItems = items.filter((item) => item.category === category && item.available);
-          if (availableItems.length === 0) return null;
+          const subcategories = subcategoriesFor(items.filter((item) => item.available), category);
+          if (subcategories.length === 0) return null;
           return (
             <div key={category} className="mb-8 break-inside-avoid">
               <h1 className="mb-3 border-b border-black pb-1 text-2xl font-bold">{categoryLabels[category]}</h1>
-              <ul>
-                {availableItems.map((item) => (
-                  <li key={item.id} className="flex justify-between gap-8 py-1 text-lg">
-                    <span>{item.name}</span>
-                    <span className="whitespace-nowrap">{displayPrice(item.price)}</span>
-                  </li>
-                ))}
-              </ul>
+              {subcategories.map((subcategory) => (
+                <section key={subcategory.name} className="mb-4 break-inside-avoid">
+                  <h2 className="mb-1 text-lg font-semibold">{subcategory.name}</h2>
+                  <ul>
+                    {subcategory.items.map((item) => (
+                      <li key={item.id} className="py-1 text-lg">
+                        <div className="flex justify-between gap-8">
+                          <span>{item.name}</span>
+                          <span className="whitespace-nowrap">{displayPrice(item.price)}</span>
+                        </div>
+                        {/* Future order-screen item buttons should remain name + price only. */}
+                        {item.description && <p className="text-sm">{item.description}</p>}
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              ))}
             </div>
           );
         })}

@@ -19,6 +19,12 @@ function requiredText(formData: FormData, key: string): string {
   return value.trim();
 }
 
+function optionalText(formData: FormData, key: string): string | null {
+  const value = formData.get(key);
+  if (typeof value !== "string") return null;
+  return value.trim() || null;
+}
+
 function validPrice(formData: FormData): string {
   const price = requiredText(formData, "price");
   if (!/^\d{1,8}(?:\.\d{1,2})?$/.test(price)) throw new Error("Invalid price");
@@ -57,12 +63,14 @@ export async function addMenuItemAction(formData: FormData): Promise<void> {
   const name = requiredText(formData, "name");
   const price = validPrice(formData);
   const category = requiredText(formData, "category");
+  const subcategory = requiredText(formData, "subcategory");
+  const description = optionalText(formData, "description");
   if (category !== "bar" && category !== "kitchen") throw new Error("Invalid category");
 
   const sql = getSql();
   await sql`
-    insert into guesthouse.menu_items (name, price, category)
-    values (${name}, ${price}, ${category})
+    insert into guesthouse.menu_items (name, description, price, category, subcategory)
+    values (${name}, ${description}, ${price}, ${category}, ${subcategory})
   `;
   revalidatePath("/admin/menucorrection");
 }

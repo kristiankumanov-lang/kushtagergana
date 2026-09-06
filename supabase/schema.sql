@@ -46,9 +46,12 @@ create table guesthouse.rooms (
 
 create table guesthouse.menu_items (
   id uuid primary key default gen_random_uuid(),
-  name text not null,
+  name text not null constraint menu_items_name_key unique,
+  description text,
   price numeric(10,2) not null,
   category text not null check (category in ('bar', 'kitchen')),
+  subcategory text not null,
+  subcategory_order integer not null default 0,
   available boolean not null default true,
   sort_order integer not null default 0,
   created_at timestamptz not null default now(),
