@@ -1,26 +1,26 @@
 create schema if not exists guesthouse;
 
 -- Reconstructed from lib/db/enquiries.ts usage — this table already exists in production; this DDL is documentation, not something to execute against the live DB (it already exists there).
-create table guesthouse.enquiries (
-  id uuid primary key default gen_random_uuid(),
-  name text not null,
-  phone text not null,
-  email text not null,
-  check_in date not null,
-  check_out date not null,
-  adults integer not null,
-  children integer not null,
-  message text,
-  locale text not null,
-  status text not null default 'new' check (status in ('new', 'confirmed', 'declined')),
-  token_hash text not null unique,
-  token_expires_at timestamptz not null,
-  token_used_at timestamptz,
-  email_sent boolean not null default false,
-  email_error text,
-  created_at timestamptz not null default now(),
-  ip_hash text
-);
+-- create table guesthouse.enquiries (
+--   id uuid primary key default gen_random_uuid(),
+--   name text not null,
+--   phone text not null,
+--   email text not null,
+--   check_in date not null,
+--   check_out date not null,
+--   adults integer not null,
+--   children integer not null,
+--   message text,
+--   locale text not null,
+--   status text not null default 'new' check (status in ('new', 'confirmed', 'declined')),
+--   token_hash text not null unique,
+--   token_expires_at timestamptz not null,
+--   token_used_at timestamptz,
+--   email_sent boolean not null default false,
+--   email_error text,
+--   created_at timestamptz not null default now(),
+--   ip_hash text
+-- );
 
 create table guesthouse.users (
   id uuid primary key default gen_random_uuid(),
@@ -67,6 +67,10 @@ create table guesthouse.tabs (
   closed_total numeric(10,2)
 );
 
+alter table guesthouse.tabs
+  add constraint tabs_room_or_label
+  check (room_id is not null or label is not null);
+
 -- NULL room IDs remain distinct, so this limits real rooms to one open tab without limiting guest tabs.
 create unique index tabs_one_open_per_room
   on guesthouse.tabs (room_id)
@@ -86,6 +90,8 @@ create table guesthouse.tab_items (
   cancelled_by uuid references guesthouse.users(id),
   cancelled_at timestamptz
 );
+
+create index tab_items_tab_id_idx on guesthouse.tab_items (tab_id);
 
 -- Seed data: the six physical guest rooms.
 insert into guesthouse.rooms (id, label, active)
