@@ -21,7 +21,7 @@ const categoryLabels: Record<MenuItem["category"], string> = {
 };
 
 function displayPrice(price: string) {
-  return `${Number(price).toFixed(2)} лв.`;
+  return `${Number(price).toFixed(2)} €`;
 }
 
 export default async function MenuCorrectionPage() {
@@ -84,7 +84,7 @@ export default async function MenuCorrectionPage() {
                     <input className="mt-2 min-h-12 w-full rounded-xl border-2 border-wood-300 px-3 text-lg" name="name" defaultValue={item.name} required />
                   </label>
                   <label className="font-semibold">
-                    Цена (лв.)
+                    Цена (€)
                     <input className="mt-2 min-h-12 w-full rounded-xl border-2 border-wood-300 px-3 text-lg" name="price" type="number" min="0" max="99999999.99" step="0.01" defaultValue={item.price} required />
                   </label>
                   <button className="min-h-12 rounded-xl bg-accent-500 px-5 font-bold text-white hover:bg-accent-600" type="submit">
@@ -105,7 +105,7 @@ export default async function MenuCorrectionPage() {
             <input className="mt-2 min-h-12 w-full rounded-xl border-2 border-wood-300 px-3 text-lg" name="name" required />
           </label>
           <label className="font-semibold">
-            Цена (лв.)
+            Цена (€)
             <input className="mt-2 min-h-12 w-full rounded-xl border-2 border-wood-300 px-3 text-lg" name="price" type="number" min="0" max="99999999.99" step="0.01" required />
           </label>
           <label className="font-semibold">
