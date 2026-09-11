@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { addItemAction, cancelTabItemAction, payTabAction, sendToKitchenAction } from "./actions";
 
@@ -47,7 +47,21 @@ export function OrderBoard({ tabId, tabLabel, menuItems, tabItems }: OrderBoardP
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [error, setError] = useState<string | null>(null);
+  const [bottomBarHeight, setBottomBarHeight] = useState(160);
+  const bottomBarRef = useRef<HTMLDivElement>(null);
   const [isPending, startTransition] = useTransition();
+
+  useEffect(() => {
+    const bottomBar = bottomBarRef.current;
+    if (!bottomBar) return;
+
+    const updateBottomBarHeight = () => setBottomBarHeight(bottomBar.getBoundingClientRect().height);
+    updateBottomBarHeight();
+
+    const observer = new ResizeObserver(updateBottomBarHeight);
+    observer.observe(bottomBar);
+    return () => observer.disconnect();
+  }, []);
 
   const groups = useMemo(() => {
     const categoryItems = menuItems.filter((item) => item.category === category);
@@ -88,7 +102,7 @@ export function OrderBoard({ tabId, tabLabel, menuItems, tabItems }: OrderBoardP
   }
 
   return (
-    <main className="mx-auto w-full max-w-3xl px-4 py-5 pb-40 sm:px-6 sm:py-8">
+    <main className="mx-auto w-full max-w-3xl px-4 py-5 sm:px-6 sm:py-8" style={{ paddingBottom: bottomBarHeight }}>
       <header>
         <Link className="inline-flex min-h-11 items-center text-lg font-semibold text-wood-700 underline" href="/admin/orders">← Към стаите</Link>
         <h1 className="mt-2 font-display text-4xl text-wood-900">{tabLabel}</h1>
@@ -148,7 +162,7 @@ export function OrderBoard({ tabId, tabLabel, menuItems, tabItems }: OrderBoardP
         </div>
       </section>
 
-      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-wood-300 bg-white/95 p-3 shadow-[0_-4px_18px_rgba(0,0,0,0.12)] backdrop-blur">
+      <div ref={bottomBarRef} className="fixed inset-x-0 bottom-0 z-30 border-t border-wood-300 bg-white/95 p-3 shadow-[0_-4px_18px_rgba(0,0,0,0.12)] backdrop-blur">
         <div className="mx-auto max-w-3xl">
           <div className="mb-2 flex items-center justify-between gap-3">
             <strong className="text-xl text-wood-900">Общо: {displayPrice(total)}</strong>

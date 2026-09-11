@@ -12,6 +12,12 @@ interface RoomRow {
   total: string;
 }
 
+interface GuestTabRow {
+  id: string;
+  label: string;
+  total: string;
+}
+
 function displayPrice(price: string) {
   return `${Number(price).toFixed(2)} €`;
 }
@@ -29,6 +35,16 @@ export default async function OrdersPage() {
     where rooms.active = true
     group by rooms.id, rooms.label, tabs.id
     order by rooms.id
+  `;
+  const guestTabs = await sql<GuestTabRow[]>`
+    select tabs.id, tabs.label,
+      coalesce(sum(tab_items.item_price * tab_items.quantity)
+        filter (where tab_items.status != 'cancelled'), 0)::text as total
+    from guesthouse.tabs as tabs
+    left join guesthouse.tab_items as tab_items on tab_items.tab_id = tabs.id
+    where tabs.room_id is null and tabs.status = 'open'
+    group by tabs.id, tabs.label, tabs.opened_at
+    order by tabs.opened_at desc
   `;
 
   return (
@@ -72,6 +88,20 @@ export default async function OrdersPage() {
           ),
         )}
       </section>
+
+      {guestTabs.length > 0 && (
+        <section className="mt-9" aria-labelledby="guest-tabs-heading">
+          <h2 id="guest-tabs-heading" className="font-display text-3xl text-wood-900">Отворени сметки</h2>
+          <div className="mt-4 grid grid-cols-2 gap-4">
+            {guestTabs.map((tab) => (
+              <Link key={tab.id} href={`/admin/orders/${tab.id}`} className="flex min-h-32 flex-col items-center justify-center rounded-2xl bg-accent-500 p-4 text-center text-xl font-bold text-white shadow-md hover:bg-accent-600">
+                <span>{tab.label}</span>
+                <span className="mt-2 text-lg">{displayPrice(tab.total)}</span>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
     </main>
   );
 }
