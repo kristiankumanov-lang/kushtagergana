@@ -25,10 +25,9 @@ export default async function AdminHomePage() {
         <Link className="flex min-h-32 items-center justify-center rounded-2xl bg-accent-500 p-6 text-center text-2xl font-bold text-white shadow-md hover:bg-accent-600" href="/admin/menucorrection">
           Меню корекция
         </Link>
-        <div aria-disabled="true" className="flex min-h-32 flex-col items-center justify-center rounded-2xl bg-wood-100 p-6 text-center text-2xl font-bold text-ink-soft opacity-70">
+        <Link className="flex min-h-32 items-center justify-center rounded-2xl bg-accent-500 p-6 text-center text-2xl font-bold text-white shadow-md hover:bg-accent-600" href="/admin/orders">
           Поръчки
-          <span className="mt-1 text-sm font-medium">скоро</span>
-        </div>
+        </Link>
       </div>
     </main>
   );
