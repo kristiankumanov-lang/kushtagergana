@@ -1,7 +1,8 @@
 import type { MetadataRoute } from "next";
+import { SITE_URL_FALLBACK } from "@/lib/site";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://kushta-gergana.bg";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? SITE_URL_FALLBACK;
   const bgUrl = `${siteUrl}/`;
   const enUrl = `${siteUrl}/en`;
 
