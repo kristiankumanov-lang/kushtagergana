@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { playfair, inter } from "@/lib/fonts";
 import { dictionaries } from "@/lib/i18n/dictionary";
 import { resolveLocale, localePath } from "@/lib/i18n/routing";
+import { SITE_URL_FALLBACK } from "@/lib/site";
 import { SiteChrome } from "@/components/layout/SiteChrome";
 import "../globals.css";
 
@@ -22,7 +23,7 @@ export function generateStaticParams() {
 // stay fully static (see the perf rounds this branch builds on).
 export const dynamicParams = false;
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.gerganaguesthouse.com";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? SITE_URL_FALLBACK;
 
 export async function generateMetadata({
   params,
