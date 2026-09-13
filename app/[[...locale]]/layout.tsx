@@ -22,7 +22,7 @@ export function generateStaticParams() {
 // stay fully static (see the perf rounds this branch builds on).
 export const dynamicParams = false;
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://kushta-gergana.bg";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.gerganaguesthouse.com";
 
 export async function generateMetadata({
   params,
@@ -55,13 +55,13 @@ export async function generateMetadata({
       siteName: dict.meta.siteName,
       title: dict.meta.ogTitle,
       description: dict.meta.ogDescription,
-      images: [{ url: "/og-image.png", width: 1200, height: 630, alt: dict.meta.ogTitle }],
+      images: [{ url: "/og-image-house.jpg", width: 1200, height: 630, alt: dict.meta.ogTitle }],
     },
     twitter: {
       card: "summary_large_image",
       title: dict.meta.ogTitle,
       description: dict.meta.ogDescription,
-      images: ["/og-image.png"],
+      images: ["/og-image-house.jpg"],
     },
     robots: { index: true, follow: true },
   };
