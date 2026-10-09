@@ -125,7 +125,20 @@ export function OrderBoard({ tabId, roomId, tabLabel, menuItems, tabItems }: Ord
     if (item.status === "added" && item.quantity > 1 && !window.confirm(`Да отменя ли ${item.quantity} бр. ${item.item_name}?`)) return;
     if (item.status === "sent_to_kitchen" && !window.confirm("Артикулът вече е изпратен към кухнята. Да бъде ли отменен?")) return;
     if (item.status === "ready" && !window.confirm(`Да отменя ли ${item.quantity} бр. ${item.item_name}?`)) return;
-    runMutation(() => cancelTabItemAction(item.id));
+    setError(null);
+    startTransition(async () => {
+      try {
+        const { removedRoomId } = await cancelTabItemAction(item.id);
+        if (removedRoomId !== null) {
+          // Last live line cancelled: the empty room tab was removed.
+          router.replace(`/admin/orders/room/${removedRoomId}`);
+        } else {
+          router.refresh();
+        }
+      } catch (caught) {
+        setError(caught instanceof Error ? caught.message : "Възникна грешка. Опитайте отново.");
+      }
+    });
   }
 
   return (

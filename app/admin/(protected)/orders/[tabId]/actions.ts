@@ -95,11 +95,19 @@ export async function addItemAction(
   return resultTabId;
 }
 
-export async function cancelTabItemAction(tabItemId: string): Promise<void> {
+/**
+ * Cancels a line. If that leaves a ROOM tab with nothing but cancelled lines,
+ * the tab is removed altogether (lines first — tab_items.tab_id has no
+ * cascade), so the room goes back to "no tab" instead of showing an open
+ * 0.00 € tab. Guest tabs ("маса 1", …) are opened explicitly by name and are
+ * left as they are. Returns the room id when the tab was removed, so the
+ * board can move back to the empty room screen.
+ */
+export async function cancelTabItemAction(tabItemId: string): Promise<{ removedRoomId: number | null }> {
   const session = await requireSessionUser();
   requiredId(tabItemId, "tabItemId");
   const sql = getSql();
-  const tabId = await sql.begin(async (tx) => {
+  const { tabId, removedRoomId } = await sql.begin(async (tx) => {
     const [item] = await tx<{ tab_id: string; status: string; tab_status: string; category: string | null }[]>`
       select tab_items.tab_id, tab_items.status, tabs.status as tab_status, menu_items.category
       from guesthouse.tab_items as tab_items
@@ -120,10 +128,25 @@ export async function cancelTabItemAction(tabItemId: string): Promise<void> {
       set status = 'cancelled', cancelled_by = ${session.id}, cancelled_at = now()
       where id = ${tabItemId}
     `;
-    return item.tab_id;
+
+    const [tab] = await tx<{ room_id: number | null; live_items: number }[]>`
+      select tabs.room_id,
+        (select count(*)::int from guesthouse.tab_items
+          where tab_id = tabs.id and status != 'cancelled') as live_items
+      from guesthouse.tabs as tabs
+      where tabs.id = ${item.tab_id}
+      for update
+    `;
+    if (tab && tab.room_id !== null && tab.live_items === 0) {
+      await tx`delete from guesthouse.tab_items where tab_id = ${item.tab_id}`;
+      await tx`delete from guesthouse.tabs where id = ${item.tab_id} and status = 'open'`;
+      return { tabId: item.tab_id, removedRoomId: tab.room_id };
+    }
+    return { tabId: item.tab_id, removedRoomId: null };
   });
   revalidatePath(`/admin/orders/${tabId}`);
   revalidatePath("/admin/orders");
+  return { removedRoomId };
 }
 
 export async function sendToKitchenAction(tabId: string): Promise<void> {
