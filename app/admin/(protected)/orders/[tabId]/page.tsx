@@ -31,10 +31,12 @@ export default async function TabPage({ params }: { params: Promise<{ tabId: str
       order by category, subcategory_order, subcategory, sort_order, name
     `,
     sql<TabItem[]>`
-      select id, item_name, item_price::text as item_price, quantity, status
-      from guesthouse.tab_items
-      where tab_id = ${tabId}
-      order by added_at, id
+      select tab_items.id, tab_items.item_name, tab_items.item_price::text as item_price,
+        tab_items.quantity, tab_items.status, menu_items.category
+      from guesthouse.tab_items as tab_items
+      left join guesthouse.menu_items as menu_items on menu_items.id = tab_items.menu_item_id
+      where tab_items.tab_id = ${tabId}
+      order by tab_items.added_at, tab_items.id
     `,
   ]);
 

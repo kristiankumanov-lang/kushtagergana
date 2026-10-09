@@ -21,10 +21,13 @@ export interface TabItem {
   item_price: string;
   quantity: number;
   status: "added" | "sent_to_kitchen" | "ready" | "cancelled";
+  category: MenuItem["category"] | null;
 }
 
 interface OrderBoardProps {
-  tabId: string;
+  /** null = the room has no tab yet; it is created by the first added item. */
+  tabId: string | null;
+  roomId?: number;
   tabLabel: string;
   menuItems: MenuItem[];
   tabItems: TabItem[];
@@ -41,7 +44,12 @@ function displayPrice(price: string | number) {
   return `${Number(price).toFixed(2)} €`;
 }
 
-export function OrderBoard({ tabId, tabLabel, menuItems, tabItems }: OrderBoardProps) {
+function statusLabel(item: TabItem) {
+  if (item.status === "ready" && item.category === "bar") return "сервирана";
+  return statusLabels[item.status];
+}
+
+export function OrderBoard({ tabId, roomId, tabLabel, menuItems, tabItems }: OrderBoardProps) {
   const router = useRouter();
   const [category, setCategory] = useState<MenuItem["category"]>("bar");
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
@@ -90,6 +98,24 @@ export function OrderBoard({ tabId, tabLabel, menuItems, tabItems }: OrderBoardP
     });
   }
 
+  function addSelectedItem(item: MenuItem) {
+    setError(null);
+    startTransition(async () => {
+      try {
+        const resultTabId = await addItemAction(tabId, roomId ?? null, item.id, quantity);
+        setSelectedItem(null);
+        if (tabId === null) {
+          // First item of a room: the tab now exists — move to its real page.
+          router.replace(`/admin/orders/${resultTabId}`);
+        } else {
+          router.refresh();
+        }
+      } catch (caught) {
+        setError(caught instanceof Error ? caught.message : "Възникна грешка. Опитайте отново.");
+      }
+    });
+  }
+
   function openQuantityDialog(item: MenuItem) {
     setQuantity(1);
     setSelectedItem(item);
@@ -98,6 +124,7 @@ export function OrderBoard({ tabId, tabLabel, menuItems, tabItems }: OrderBoardP
   function cancelItem(item: TabItem) {
     if (item.status === "added" && item.quantity > 1 && !window.confirm(`Да отменя ли ${item.quantity} бр. ${item.item_name}?`)) return;
     if (item.status === "sent_to_kitchen" && !window.confirm("Артикулът вече е изпратен към кухнята. Да бъде ли отменен?")) return;
+    if (item.status === "ready" && !window.confirm(`Да отменя ли ${item.quantity} бр. ${item.item_name}?`)) return;
     runMutation(() => cancelTabItemAction(item.id));
   }
 
@@ -147,9 +174,9 @@ export function OrderBoard({ tabId, tabLabel, menuItems, tabItems }: OrderBoardP
                   <div className="min-w-0 flex-1">
                     <h3 className="break-words text-lg font-bold">{item.item_name}</h3>
                     <p className="mt-1 text-sm text-ink-soft">{item.quantity} × {displayPrice(item.item_price)} = <strong>{displayPrice(Number(item.item_price) * item.quantity)}</strong></p>
-                    <p className="mt-1 text-sm font-semibold">{statusLabels[item.status]}</p>
+                    <p className="mt-1 text-sm font-semibold">{statusLabel(item)}</p>
                   </div>
-                  {item.status === "added" && (
+                  {(item.status === "added" || (item.status === "ready" && item.category === "bar")) && (
                     <button type="button" disabled={isPending} onClick={() => cancelItem(item)} aria-label={`Отмени ${item.item_name}`} className="min-h-12 min-w-12 rounded-xl border-2 border-wood-300 text-xl font-bold no-underline disabled:opacity-60">✕</button>
                   )}
                   {item.status === "sent_to_kitchen" && (
@@ -169,8 +196,8 @@ export function OrderBoard({ tabId, tabLabel, menuItems, tabItems }: OrderBoardP
             {addedCount > 0 && <span className="rounded-full bg-terracotta-500 px-3 py-1 text-sm font-extrabold text-white">{addedCount} неизпратени</span>}
           </div>
           <div className="grid grid-cols-[1fr_auto] gap-2">
-            <button type="button" disabled={isPending || addedCount === 0} onClick={() => runMutation(() => sendToKitchenAction(tabId))} className="min-h-14 rounded-xl bg-accent-500 px-3 font-bold text-white disabled:bg-stone-300 disabled:text-stone-600">{isPending ? "Моля, изчакайте…" : "Изпрати поръчка за кухнята"}</button>
-            <button type="button" disabled={isPending} onClick={() => { if (window.confirm(`Потвърждавате ли плащане на ${displayPrice(total)}? Сметката ще бъде затворена.`)) runMutation(() => payTabAction(tabId)); }} className="min-h-14 rounded-xl bg-wood-700 px-4 font-bold text-white hover:bg-wood-900 disabled:opacity-60">Плащане</button>
+            <button type="button" disabled={isPending || addedCount === 0 || tabId === null} onClick={() => { if (tabId) runMutation(() => sendToKitchenAction(tabId)); }} className="min-h-14 rounded-xl bg-accent-500 px-3 font-bold text-white disabled:bg-stone-300 disabled:text-stone-600">{isPending ? "Моля, изчакайте…" : "Изпрати поръчка за кухнята"}</button>
+            <button type="button" disabled={isPending || tabId === null} onClick={() => { if (tabId && window.confirm(`Потвърждавате ли плащане на ${displayPrice(total)}? Сметката ще бъде затворена.`)) runMutation(() => payTabAction(tabId)); }} className="min-h-14 rounded-xl bg-wood-700 px-4 font-bold text-white hover:bg-wood-900 disabled:opacity-60">Плащане</button>
           </div>
         </div>
       </div>
@@ -187,7 +214,7 @@ export function OrderBoard({ tabId, tabLabel, menuItems, tabItems }: OrderBoardP
             </div>
             <div className="mt-7 grid grid-cols-2 gap-3">
               <button type="button" disabled={isPending} onClick={() => setSelectedItem(null)} className="min-h-14 rounded-xl border-2 border-wood-300 font-bold">Отказ</button>
-              <button type="button" disabled={isPending} onClick={() => runMutation(() => addItemAction(tabId, selectedItem.id, quantity), () => setSelectedItem(null))} className="min-h-14 rounded-xl bg-accent-500 font-bold text-white disabled:opacity-60">{isPending ? "Добавяне…" : "Добави"}</button>
+              <button type="button" disabled={isPending} onClick={() => addSelectedItem(selectedItem)} className="min-h-14 rounded-xl bg-accent-500 font-bold text-white disabled:opacity-60">{isPending ? "Добавяне…" : "Добави"}</button>
             </div>
           </div>
         </div>

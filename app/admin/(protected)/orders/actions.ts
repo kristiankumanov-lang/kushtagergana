@@ -18,38 +18,10 @@ function requiredText(formData: FormData, key: string): string {
   return value.trim();
 }
 
-function isUniqueViolation(error: unknown): error is { code: string } {
-  return typeof error === "object" && error !== null && "code" in error && error.code === "23505";
-}
-
-export async function openRoomTabAction(formData: FormData): Promise<void> {
-  const session = await requireSessionUser();
-  const roomIdText = requiredText(formData, "roomId");
-  const roomId = Number(roomIdText);
-  if (!Number.isInteger(roomId)) throw new Error("Invalid roomId");
-
-  const sql = getSql();
-  let tabId: string | undefined;
-  try {
-    const [tab] = await sql<{ id: string }[]>`
-      insert into guesthouse.tabs (room_id, opened_by)
-      values (${roomId}, ${session.id})
-      returning id
-    `;
-    tabId = tab?.id;
-  } catch (error) {
-    if (!isUniqueViolation(error)) throw error;
-    const [existingTab] = await sql<{ id: string }[]>`
-      select id from guesthouse.tabs
-      where room_id = ${roomId} and status = 'open'
-      limit 1
-    `;
-    tabId = existingTab?.id;
-  }
-
-  if (!tabId) throw new Error("Неуспешно отваряне на сметката.");
-  redirect(`/admin/orders/${tabId}`);
-}
+// Room tabs are no longer opened here: entering a room only shows the menu,
+// and the tab is created by the first addItemAction (see [tabId]/actions.ts).
+// That way walking into a room and leaving without ordering leaves nothing
+// behind instead of an empty 0.00 € tab.
 
 export async function createGuestTabAction(formData: FormData): Promise<void> {
   const session = await requireSessionUser();

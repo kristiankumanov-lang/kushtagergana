@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getSql } from "@/lib/db/client";
-import { createGuestTabAction, openRoomTabAction } from "./actions";
+import { createGuestTabAction } from "./actions";
 
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
@@ -79,12 +79,9 @@ export default async function OrdersPage() {
               <span className="mt-2 text-lg">{displayPrice(room.total)}</span>
             </Link>
           ) : (
-            <form key={room.id} action={openRoomTabAction}>
-              <input type="hidden" name="roomId" value={room.id} />
-              <button className="min-h-32 w-full rounded-2xl border-2 border-wood-300 bg-wood-100 p-4 text-xl font-bold text-wood-900 shadow-sm hover:bg-white" type="submit">
-                {room.label}
-              </button>
-            </form>
+            <Link key={room.id} href={`/admin/orders/room/${room.id}`} className="flex min-h-32 w-full items-center justify-center rounded-2xl border-2 border-wood-300 bg-wood-100 p-4 text-center text-xl font-bold text-wood-900 shadow-sm hover:bg-white">
+              {room.label}
+            </Link>
           ),
         )}
       </section>
