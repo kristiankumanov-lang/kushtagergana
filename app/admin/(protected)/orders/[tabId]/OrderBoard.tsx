@@ -22,6 +22,8 @@ export interface TabItem {
   quantity: number;
   status: "added" | "sent_to_kitchen" | "ready" | "cancelled";
   category: MenuItem["category"] | null;
+  /** The kitchen pressed "Приготвя се" on this line's ticket. */
+  accepted?: boolean;
 }
 
 interface OrderBoardProps {
@@ -46,6 +48,7 @@ function displayPrice(price: string | number) {
 
 function statusLabel(item: TabItem) {
   if (item.status === "ready" && item.category === "bar") return "сервирана";
+  if (item.status === "sent_to_kitchen" && item.accepted) return "приготвя се";
   return statusLabels[item.status];
 }
 

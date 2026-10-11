@@ -32,9 +32,11 @@ export default async function TabPage({ params }: { params: Promise<{ tabId: str
     `,
     sql<TabItem[]>`
       select tab_items.id, tab_items.item_name, tab_items.item_price::text as item_price,
-        tab_items.quantity, tab_items.status, menu_items.category
+        tab_items.quantity, tab_items.status, menu_items.category,
+        (tickets.accepted_at is not null) as accepted
       from guesthouse.tab_items as tab_items
       left join guesthouse.menu_items as menu_items on menu_items.id = tab_items.menu_item_id
+      left join guesthouse.kitchen_tickets as tickets on tickets.id = tab_items.ticket_id
       where tab_items.tab_id = ${tabId}
       order by tab_items.added_at, tab_items.id
     `,

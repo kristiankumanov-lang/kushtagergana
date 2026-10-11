@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getSql } from "@/lib/db/client";
+import { ensureWebhook } from "@/lib/telegram";
 import { createGuestTabAction } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -23,6 +24,9 @@ function displayPrice(price: string) {
 }
 
 export default async function OrdersPage() {
+  // Registers the kitchen bot's webhook the first time anyone opens orders
+  // after the token is set (cached per server instance, never throws).
+  await ensureWebhook();
   const sql = getSql();
   const rooms = await sql<RoomRow[]>`
     select rooms.id, rooms.label, tabs.id as tab_id,

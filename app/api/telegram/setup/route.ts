@@ -1,15 +1,14 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { getSessionUser, SESSION_COOKIE_NAME } from "@/lib/auth";
-import { SITE_URL_FALLBACK } from "@/lib/site";
-import { isTelegramConfigured, telegramApi, webhookSecret } from "@/lib/telegram";
+import { isTelegramConfigured, registerWebhook, telegramApi, webhookUrl } from "@/lib/telegram";
 
 export const dynamic = "force-dynamic";
 
 /**
- * One-time setup: points the Telegram bot's webhook at this site.
- * Open /api/telegram/setup while logged in to /admin (any of the two users).
- * Safe to open again — it just re-registers the same webhook.
+ * Manual fallback: (re)points the Telegram bot's webhook at this site.
+ * Normally not needed — ensureWebhook() does it automatically on first use.
+ * Open /api/telegram/setup while logged in to /admin.
  */
 export async function GET() {
   const rawToken = (await cookies()).get(SESSION_COOKIE_NAME)?.value;
@@ -19,16 +18,10 @@ export async function GET() {
     return NextResponse.json({ ok: false, error: "TELEGRAM_BOT_TOKEN не е зададен във Vercel." }, { status: 503 });
   }
 
-  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || SITE_URL_FALLBACK).replace(/\/$/, "");
-  const url = `${siteUrl}/api/telegram/webhook`;
+  const url = webhookUrl();
 
   try {
-    await telegramApi("setWebhook", {
-      url,
-      secret_token: webhookSecret(),
-      allowed_updates: ["message", "callback_query"],
-      drop_pending_updates: true,
-    });
+    await registerWebhook();
     const me = await telegramApi<{ username: string }>("getMe", {});
     return NextResponse.json({ ok: true, bot: `@${me.username}`, webhook: url });
   } catch (error) {
