@@ -52,6 +52,14 @@ function statusLabel(item: TabItem) {
   return statusLabels[item.status];
 }
 
+interface ConfirmRequest {
+  title: string;
+  message: string;
+  confirmLabel: string;
+  danger?: boolean;
+  onConfirm: () => void;
+}
+
 export function OrderBoard({ tabId, roomId, tabLabel, menuItems, tabItems }: OrderBoardProps) {
   const router = useRouter();
   const [category, setCategory] = useState<MenuItem["category"]>("bar");
@@ -60,7 +68,27 @@ export function OrderBoard({ tabId, roomId, tabLabel, menuItems, tabItems }: Ord
   const [error, setError] = useState<string | null>(null);
   const [bottomBarHeight, setBottomBarHeight] = useState(160);
   const bottomBarRef = useRef<HTMLDivElement>(null);
+  const billRef = useRef<HTMLElement>(null);
+  const [billInView, setBillInView] = useState(false);
+  // In-app confirm dialog instead of window.confirm(): some mobile browsers
+  // (in-app browsers, home-screen apps) silently suppress native dialogs, so
+  // "Плащане" never asked and never paid on the phone.
+  const [confirmRequest, setConfirmRequest] = useState<ConfirmRequest | null>(null);
   const [isPending, startTransition] = useTransition();
+
+  useEffect(() => {
+    const bill = billRef.current;
+    if (!bill) return;
+    const observer = new IntersectionObserver(([entry]) => setBillInView(entry.isIntersecting), {
+      rootMargin: "0px 0px -120px 0px",
+    });
+    observer.observe(bill);
+    return () => observer.disconnect();
+  }, []);
+
+  function scrollToBill() {
+    billRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
 
   useEffect(() => {
     const bottomBar = bottomBarRef.current;
@@ -125,9 +153,34 @@ export function OrderBoard({ tabId, roomId, tabLabel, menuItems, tabItems }: Ord
   }
 
   function cancelItem(item: TabItem) {
-    if (item.status === "added" && item.quantity > 1 && !window.confirm(`Да отменя ли ${item.quantity} бр. ${item.item_name}?`)) return;
-    if (item.status === "sent_to_kitchen" && !window.confirm("Артикулът вече е изпратен към кухнята. Да бъде ли отменен?")) return;
-    if (item.status === "ready" && !window.confirm(`Да отменя ли ${item.quantity} бр. ${item.item_name}?`)) return;
+    const needsConfirm = item.status !== "added" || item.quantity > 1;
+    if (!needsConfirm) {
+      doCancelItem(item);
+      return;
+    }
+    setConfirmRequest({
+      title: `Отмяна: ${item.item_name}`,
+      message:
+        item.status === "sent_to_kitchen"
+          ? `Артикулът вече е изпратен към кухнята. Да бъдат ли отменени ${item.quantity} бр.? Кухнята ще получи известие.`
+          : `Да отменя ли ${item.quantity} бр. ${item.item_name}?`,
+      confirmLabel: "Отмени артикула",
+      danger: true,
+      onConfirm: () => doCancelItem(item),
+    });
+  }
+
+  function requestPayment() {
+    if (!tabId) return;
+    setConfirmRequest({
+      title: "Плащане",
+      message: `Потвърждавате ли плащане на ${displayPrice(total)}? Сметката ще бъде затворена.`,
+      confirmLabel: `Плати ${displayPrice(total)}`,
+      onConfirm: () => runMutation(() => payTabAction(tabId)),
+    });
+  }
+
+  function doCancelItem(item: TabItem) {
     setError(null);
     startTransition(async () => {
       try {
@@ -178,7 +231,7 @@ export function OrderBoard({ tabId, roomId, tabLabel, menuItems, tabItems }: Ord
         ))}
       </section>
 
-      <section className="mt-10" aria-labelledby="bill-heading">
+      <section ref={billRef} className="mt-10 scroll-mt-4" aria-labelledby="bill-heading">
         <h2 id="bill-heading" className="font-display text-3xl text-wood-900">Сметка</h2>
         <div className="mt-4 space-y-3">
           {tabItems.length === 0 && <p className="rounded-2xl bg-white p-5 text-ink-soft">Сметката е празна.</p>}
@@ -205,6 +258,17 @@ export function OrderBoard({ tabId, roomId, tabLabel, menuItems, tabItems }: Ord
         </div>
       </section>
 
+      {!billInView && (
+        <button
+          type="button"
+          onClick={scrollToBill}
+          style={{ bottom: bottomBarHeight + 12 }}
+          className="fixed right-4 z-30 flex min-h-12 items-center gap-2 rounded-full bg-wood-900 px-5 font-bold text-white shadow-lg hover:bg-wood-700"
+        >
+          ↓ Сметка{tabItems.filter((item) => item.status !== "cancelled").length > 0 && ` (${tabItems.filter((item) => item.status !== "cancelled").length})`}
+        </button>
+      )}
+
       <div ref={bottomBarRef} className="fixed inset-x-0 bottom-0 z-30 border-t border-wood-300 bg-white/95 p-3 shadow-[0_-4px_18px_rgba(0,0,0,0.12)] backdrop-blur">
         <div className="mx-auto max-w-3xl">
           <div className="mb-2 flex items-center justify-between gap-3">
@@ -213,7 +277,7 @@ export function OrderBoard({ tabId, roomId, tabLabel, menuItems, tabItems }: Ord
           </div>
           <div className="grid grid-cols-[1fr_auto] gap-2">
             <button type="button" disabled={isPending || addedCount === 0 || tabId === null} onClick={() => { if (tabId) runMutation(() => sendToKitchenAction(tabId)); }} className="min-h-14 rounded-xl bg-accent-500 px-3 font-bold text-white disabled:bg-stone-300 disabled:text-stone-600">{isPending ? "Моля, изчакайте…" : "Изпрати поръчка за кухнята"}</button>
-            <button type="button" disabled={isPending || tabId === null} onClick={() => { if (tabId && window.confirm(`Потвърждавате ли плащане на ${displayPrice(total)}? Сметката ще бъде затворена.`)) runMutation(() => payTabAction(tabId)); }} className="min-h-14 rounded-xl bg-wood-700 px-4 font-bold text-white hover:bg-wood-900 disabled:opacity-60">Плащане</button>
+            <button type="button" disabled={isPending || tabId === null} onClick={requestPayment} className="min-h-14 rounded-xl bg-wood-700 px-4 font-bold text-white hover:bg-wood-900 disabled:opacity-60">Плащане</button>
           </div>
         </div>
       </div>
@@ -231,6 +295,28 @@ export function OrderBoard({ tabId, roomId, tabLabel, menuItems, tabItems }: Ord
             <div className="mt-7 grid grid-cols-2 gap-3">
               <button type="button" disabled={isPending} onClick={() => setSelectedItem(null)} className="min-h-14 rounded-xl border-2 border-wood-300 font-bold">Отказ</button>
               <button type="button" disabled={isPending} onClick={() => addSelectedItem(selectedItem)} className="min-h-14 rounded-xl bg-accent-500 font-bold text-white disabled:opacity-60">{isPending ? "Добавяне…" : "Добави"}</button>
+            </div>
+          </div>
+        </div>
+      )}
+      {confirmRequest && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4" role="presentation" onClick={() => setConfirmRequest(null)}>
+          <div role="alertdialog" aria-modal="true" aria-labelledby="confirm-title" onClick={(event) => event.stopPropagation()} className="w-full max-w-sm rounded-2xl bg-white p-5 shadow-xl">
+            <h2 id="confirm-title" className="text-2xl font-bold text-wood-900">{confirmRequest.title}</h2>
+            <p className="mt-3 text-lg text-ink-soft">{confirmRequest.message}</p>
+            <div className="mt-7 grid grid-cols-2 gap-3">
+              <button type="button" onClick={() => setConfirmRequest(null)} className="min-h-14 rounded-xl border-2 border-wood-300 font-bold">Назад</button>
+              <button
+                type="button"
+                onClick={() => {
+                  const request = confirmRequest;
+                  setConfirmRequest(null);
+                  request.onConfirm();
+                }}
+                className={`min-h-14 rounded-xl px-2 font-bold text-white ${confirmRequest.danger ? "bg-terracotta-500" : "bg-wood-700"}`}
+              >
+                {confirmRequest.confirmLabel}
+              </button>
             </div>
           </div>
         </div>
