@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getSessionUser, SESSION_COOKIE_NAME } from "@/lib/auth";
 import { getSql } from "@/lib/db/client";
+import { notifyKitchenCancel, notifyKitchenTicket } from "@/lib/telegram";
 
 async function requireSessionUser() {
   const rawToken = (await cookies()).get(SESSION_COOKIE_NAME)?.value;
@@ -107,11 +108,21 @@ export async function cancelTabItemAction(tabItemId: string): Promise<{ removedR
   const session = await requireSessionUser();
   requiredId(tabItemId, "tabItemId");
   const sql = getSql();
-  const { tabId, removedRoomId } = await sql.begin(async (tx) => {
-    const [item] = await tx<{ tab_id: string; status: string; tab_status: string; category: string | null }[]>`
-      select tab_items.tab_id, tab_items.status, tabs.status as tab_status, menu_items.category
+  const { tabId, removedRoomId, kitchenCancel } = await sql.begin(async (tx) => {
+    const [item] = await tx<{
+      tab_id: string;
+      status: string;
+      tab_status: string;
+      category: string | null;
+      item_name: string;
+      quantity: number;
+      tab_label: string;
+    }[]>`
+      select tab_items.tab_id, tab_items.status, tabs.status as tab_status, menu_items.category,
+        tab_items.item_name, tab_items.quantity, coalesce(rooms.label, tabs.label, 'Гости') as tab_label
       from guesthouse.tab_items as tab_items
       join guesthouse.tabs as tabs on tabs.id = tab_items.tab_id
+      left join guesthouse.rooms as rooms on rooms.id = tabs.room_id
       left join guesthouse.menu_items as menu_items on menu_items.id = tab_items.menu_item_id
       where tab_items.id = ${tabItemId}
       for update of tab_items
@@ -128,6 +139,11 @@ export async function cancelTabItemAction(tabItemId: string): Promise<{ removedR
       set status = 'cancelled', cancelled_by = ${session.id}, cancelled_at = now()
       where id = ${tabItemId}
     `;
+    // The kitchen only needs to hear about lines it already received.
+    const kitchenCancel =
+      item.status === "sent_to_kitchen"
+        ? { tabLabel: item.tab_label, itemName: item.item_name, quantity: item.quantity }
+        : null;
 
     const [tab] = await tx<{ room_id: number | null; live_items: number }[]>`
       select tabs.room_id,
@@ -139,32 +155,53 @@ export async function cancelTabItemAction(tabItemId: string): Promise<{ removedR
     `;
     if (tab && tab.room_id !== null && tab.live_items === 0) {
       await tx`delete from guesthouse.tab_items where tab_id = ${item.tab_id}`;
+      await tx`delete from guesthouse.kitchen_tickets where tab_id = ${item.tab_id}`;
       await tx`delete from guesthouse.tabs where id = ${item.tab_id} and status = 'open'`;
-      return { tabId: item.tab_id, removedRoomId: tab.room_id };
+      return { tabId: item.tab_id, removedRoomId: tab.room_id, kitchenCancel };
     }
-    return { tabId: item.tab_id, removedRoomId: null };
+    return { tabId: item.tab_id, removedRoomId: null, kitchenCancel };
   });
+  if (kitchenCancel) {
+    await notifyKitchenCancel(kitchenCancel.tabLabel, kitchenCancel.itemName, kitchenCancel.quantity);
+  }
   revalidatePath(`/admin/orders/${tabId}`);
   revalidatePath("/admin/orders");
   return { removedRoomId };
 }
 
+/**
+ * Sends every not-yet-sent kitchen line of the tab as one kitchen ticket and
+ * posts it to the kitchen's Telegram with a "✅ Готово" button.
+ * The DB update is the source of truth; Telegram is best-effort after commit.
+ */
 export async function sendToKitchenAction(tabId: string): Promise<void> {
-  await requireSessionUser();
+  const session = await requireSessionUser();
   requiredId(tabId, "tabId");
   const sql = getSql();
-  await sql.begin(async (tx) => {
+  const ticketId = await sql.begin(async (tx) => {
     const [tab] = await tx<{ status: string }[]>`
       select status from guesthouse.tabs where id = ${tabId} for update
     `;
     if (!tab) throw new Error("Сметката не е намерена.");
     if (tab.status !== "open") throw new Error("Тази сметка вече е затворена.");
-    await tx`
-      update guesthouse.tab_items
-      set status = 'sent_to_kitchen'
+    const [pending] = await tx<{ count: number }[]>`
+      select count(*)::int as count from guesthouse.tab_items
       where tab_id = ${tabId} and status = 'added'
     `;
+    if (!pending || pending.count === 0) return null;
+    const [ticket] = await tx<{ id: string }[]>`
+      insert into guesthouse.kitchen_tickets (tab_id, sent_by)
+      values (${tabId}, ${session.id})
+      returning id
+    `;
+    await tx`
+      update guesthouse.tab_items
+      set status = 'sent_to_kitchen', ticket_id = ${ticket.id}
+      where tab_id = ${tabId} and status = 'added'
+    `;
+    return ticket.id;
   });
+  if (ticketId) await notifyKitchenTicket(ticketId);
   revalidatePath(`/admin/orders/${tabId}`);
 }
 
